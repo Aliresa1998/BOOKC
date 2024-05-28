@@ -11,10 +11,12 @@ import {
   Table,
   Row,
   Typography,
-  Popconfirm,
+  Space
 } from "antd";
-import { Pagination } from "antd";
+// import { Pagination } from "antd";
 import "./style.css";
+import trash from '../../assets/icons/trash.png';
+import edit from '../../assets/icons/edit.png';
 
 const { TextArea } = Input;
 
@@ -195,9 +197,11 @@ const Service = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      width: '174px'
     },
     {
       title: "Cost",
+      width: '94px',
       render: (_, record) => {
         return (
           <>
@@ -221,31 +225,28 @@ const Service = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      width: '700px'
     },
     {
       title: "Action",
+      width: '89px',
       render: (_, record) => {
         return (
           <>
-            <span
-              className="services_edit"
-              onClick={() => {
-                handleEditService(record);
-              }}
-            >
-              Edit
-            </span>
-            <Divider type="vertical" />
-            <Popconfirm
-              title="Are you sure to delete this item?"
-              onConfirm={() => {
-                handleDeleteService(record.id);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <span className="services_delete">Delete</span>
-            </Popconfirm>
+           <Space size="middle">
+             <Button
+              type="text"
+              icon={<img src={trash} alt="" />}
+              style={{ color: "#979797" }}
+              onClick={() =>{ handleDeleteService(record.id); }}
+            />
+             <Button
+              type="text"
+              icon={<img src={edit} alt="" />}
+              style={{ color: "#979797" }}
+              onClick={() =>{ handleEditService(record); }}
+            />
+            </Space>
           </>
         );
       },
@@ -263,12 +264,12 @@ const Service = () => {
             justify="space-between"
             type={"flex"}
           >
-            <Typography.Text strong={true}>Services</Typography.Text>
+            <Typography.Text className="font-20-500">Services</Typography.Text>
             <Button
               onClick={handleAddNewService}
-              className="login-btn create-payment-request-btn cw"
+              className="create-btn"
             >
-              + New Service
+              Add Service
             </Button>
           </Row>
 
@@ -276,6 +277,7 @@ const Service = () => {
             columns={columns}
             dataSource={data}
             style={{ marginTop: "15px" }}
+            pagination={false}
           />
           <Row type="flex" justify="end" className="mt25">
             <Pagination
@@ -293,50 +295,58 @@ const Service = () => {
           visible={openCreateModal}
           footer={null}
           onCancel={handleCloseAddService}
+          className="modal-size"
         >
-          <label className="formLabel">Service Name</label>
+          <div className="flex-roww">
+            <div>
+              <label className="margin-bt">Service Name</label>
 
-          <Input
-            className={"inputs"}
-            onChange={handleChange}
-            type="text"
-            name="name"
-            placeholder="Service 1"
-            value={createsService.name}
-          />
+              <Input
+                className='input-area'
+                onChange={handleChange}
+                type="text"
+                name="name"
+                placeholder="Enter Service Name"
+                value={createsService.name}
+              />
+            </div>
+            <div className="margin-l">
+              <label className="margin-bt">Cost</label>
+              <InputNumber
+                className="cost-input"
+                value={createsService.cost}
+                name="cost"
+                defaultValue={0}
+                formatter={(value) =>
+                  `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                // className="w100p"
+                onChange={(e, value) => {
+                  setCreatesService({
+                    ...createsService,
+                    cost: e,
+                  });
+                }}
+              />
+            </div>
+          </div>
 
-          <label className="formLabel">Cost</label>
-          <InputNumber
-            value={createsService.cost}
-            name="cost"
-            defaultValue={0}
-            formatter={(value) =>
-              `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            }
-            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-            className="w100p"
-            onChange={(e, value) => {
-              setCreatesService({
-                ...createsService,
-                cost: e,
-              });
-            }}
-          />
-
-          <label className="formLabel">Description</label>
+          <label className='formLabel' >Description</label>
 
           <TextArea
             name="description"
             value={createsService.description}
             onChange={handleChange}
-            autoSize={{ minRows: 3, maxRows: 5 }}
-            placeholder="Description..."
+            autoSize={{ minRows: 6, maxRows: 8 }}
+            placeholder="Write Description..."
+            className='text-area-size'
           />
           <br />
           <div className="btnBox services_close">
-            <Button onClick={handleCloseAddService} type="secondary">
+            {/* <Button onClick={handleCloseAddService} type="secondary">
               Close
-            </Button>
+            </Button> */}
             <Button
               disabled={loading}
               onClick={handleCreateService}

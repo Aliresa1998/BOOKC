@@ -170,11 +170,11 @@ const PaymentForm = (props) => {
                 />
                 <input type="hidden" id="language" value="en" />
 
-                 {/*<input type="hidden" id="test" value="1" /> */}  
+                {/*<input type="hidden" id="test" value="1" /> */}
 
                 {/* CARD-INFORMATION */}
-                {/* 
-                <Input
+                {/*
+                    <Input
                     type="hidden"
                     id="cardToken"
                     value={""}
@@ -306,7 +306,100 @@ const PaymentForm = (props) => {
 
 
             </form >
+
         </div >
+        // <>
+        //     <Form
+        //         layout="vertical"
+        //         className="credit-card-form"
+        //         onSubmit={handleProcessClick}
+        //         action={helcimResponse}
+        //     >
+        //         <input type="hidden" id="token"
+        //             value={props.helcimConfig.token}
+        //         />
+        //         <input type="hidden" id="language" value="en" />
+        //         <input type="hidden" id="test" value="1" />
+        //         {/* CARD-INFORMATION */}
+
+        //         <Input
+        //             type="hidden"
+        //             id="cardToken"
+        //             value={""}
+        //             onChange={(e) => setCardToken(e.target.value)}
+        //             placeholder="Card Token"
+        //         />
+
+
+        //         <Input
+        //             id="customerCode"
+        //             type="hidden"
+        //             value={props.helcimConfig.customerCode}
+        //             onChange={(e) => setCardToken(e.target.value)}
+        //             placeholder="Card Token"
+        //         />
+        //         <Row gutter={16}>
+        //             <Col span={12}>
+        //                 <Form.Item label="Credit Card Number" required>
+        //                     <Input
+        //                         value={cardNumber}
+        //                         onChange={(e) => setCardNumber(e.target.value)}
+        //                         style={{ height: 42, border: '1px solid #6B43B5', borderRadius: 8 }}
+        //                         placeholder="Enter Credit Card Number"
+        //                         suffix={<img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" style={{ width: '20px' }} />}
+        //                     />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col span={6}>
+        //                 <Form.Item label="Expiration" required>
+        //                     <Input placeholder="MM / YY" style={{ height: 42, border: '1px solid #6B43B5', borderRadius: 8 }} onChange={(e) => setCardExpiryMonth(e.target.value)} value={cardExpiryMonth} />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col span={6}>
+        //                 <Form.Item label="CVC" required>
+        //                     <Input placeholder="Enter CVC" style={{ height: 42, border: '1px solid #6B43B5', borderRadius: 8 }} onChange={(e) => setCardCVV(e.target.value)} value={cardCVV} />
+        //                 </Form.Item>
+        //             </Col>
+        //         </Row>
+        //         <Row gutter={16}>
+        //             <Col span={12}>
+        //                 <Form.Item label="Card Holder Country" required>
+        //                     <Select placeholder="Enter Country" style={{ height: 42, border: '1px solid #6B43B5', borderRadius: 6 }}>
+        //                         <Option value="usa">USA</Option>
+        //                         <Option value="canada">Canada</Option>
+        //                         <Option value="uk">UK</Option>
+        //                         {/* Add more countries as needed */}
+        //                     </Select>
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col span={12}>
+        //                 <Form.Item label="Card Holder Postal Code" required>
+        //                     <Input placeholder="Enter Postal Code" style={{ height: 42, border: '1px solid #6B43B5', borderRadius: 8 }}
+        //                         value={cardHolderPostalCode}
+        //                         onChange={(e) => setCardHolderPostalCode(e.target.value)}
+        //                     />
+        //                 </Form.Item>
+        //             </Col>
+        //         </Row>
+        //     </Form>
+        //     <div className='mt10'>
+        //         <Button
+        //             htmlType="submit"
+        //             style={{
+        //                 width: "100%",
+        //                 marginTop: "15px"
+        //             }}
+        //             type="primary"
+        //             loading={loading}
+        //             onClick={handleProcessClick}
+        //         >
+        //             {
+        //                 loading ? "Processing..." : "Pay"
+        //             }
+
+        //         </Button>
+        //     </div>
+        // </>
     );
 };
 

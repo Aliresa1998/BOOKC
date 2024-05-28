@@ -110,27 +110,63 @@ const PaymentForm = (props) => {
 
 
 
-    const checkStatus = async () => {
+    // const checkStatus = async () => {
 
 
-        fetch(config.apiGateway.URL + "/billpay/create-installment/"
-            , {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    "interval_count": localStorage.getItem("wizard_recurring_interval_count"),
-                    "payment_request": window.location.href.split("/")[window.location.href.split("/").length - 1],
-                }),
-            })
+    //     fetch(config.apiGateway.URL + "/billpay/create-installment/"
+    //         , {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({
+    //                 "interval_count": localStorage.getItem("wizard_recurring_interval_count"),
+    //                 "payment_request": window.location.href.split("/")[window.location.href.split("/").length - 1],
+    //             }),
+    //         })
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             console.log(data)
+    //         });
+
+    // }
+    const checkStatus = async (selectedId) => {
+
+
+        if (!selectedId) {
+            console.error("Selected ID is missing for the payment request.");
+            return;
+        }
+
+        // Retrieve the interval count from localStorage and parse it as an integer
+        const intervalCount = parseInt(localStorage.getItem("wizard_recurring_interval_count"), 10);
+
+        // Check if the parsed value is a valid number
+        if (isNaN(intervalCount)) {
+            console.error("Invalid interval count retrieved from localStorage.");
+            return; // Exit the function if interval count is not a valid number
+        }
+
+        fetch(config.apiGateway.URL + "/billpay/create-installment/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "interval_count": props.selectedIntervalId,  // Use the parsed integer
+                "payment_request": selectedId,
+            }),
+        })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data)
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error("Error submitting payment request:", error);
             });
+    };
 
-    }
+
+
 
     useEffect(() => {
-        checkStatus()
+        checkStatus(props.selectedId);
     }, [])
 
     const [grecaptcha, setGrecaptcha] = useState("")
@@ -197,7 +233,7 @@ const PaymentForm = (props) => {
                 />
                 <input type="hidden" id="language" value="en" />
 
-                 {/*<input type="hidden" id="test" value="1" /> */}  
+                {/*<input type="hidden" id="test" value="1" /> */}
 
                 {/* CARD-INFORMATION */}
                 {/* 

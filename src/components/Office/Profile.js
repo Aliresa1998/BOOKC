@@ -10,13 +10,21 @@ import {
   Modal,
   Upload,
   Spin,
+  Rate,
 } from "antd";
+import { Map, TileLayer, Marker, Popup } from 'react-leaflet'; // Using Map instead of MapContainer
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import Dropzone from 'react-dropzone'
 import { controller } from "../../controller";
 import config from "../../config";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import "./style.css";
-const { Title } = Typography;
+
+import back from '../../assets/img/AdobeStock_428089463-1-scaled 3.png';
+import edit from '../../assets/icons/edit.png';
+import add from '../../assets/icons/add-circle20.png';
+
+const { Title, Text } = Typography;
 
 const EditOffice = () => {
   const [office, setOffice] = useState({
@@ -50,6 +58,9 @@ const EditOffice = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [previewImage, sePreviewImage] = useState("");
+  const [editOfficeMode, setEditOfficeMode] = useState(false);
+  const [editLocationMode, setEditLocationMode] = useState(false);
+  const [editNameMode, setEditNameMode] = useState(false);
   const [errors, setErrors] = useState({
     name: "",
     state: "",
@@ -72,6 +83,8 @@ const EditOffice = () => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+
+
 
   const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -151,23 +164,26 @@ const EditOffice = () => {
     }
   };
   const getOfficeProfile = async () => {
-    const response = await controller.getOfficeProfile(office);
-    if (response.data) {
-      setOffice(response.data);
-      setOfficedf(response.data)
-      setLogoFile(response.data.logo);
-      if (response.data.latitude && response.data.longitude) {
-        getGoogleLocation(
-          response.data.latitude,
-          response.data.longitude,
-          response.data,
-          true
-        );
+    try {
+      const response = await controller.getOfficeProfile();
+      if (response && response.data) {
+        setLogoFile(response.data.logo);
+        setOffice({
+          ...office,
+          ...response.data,
+          latitude: response.data.latitude,
+          longitude: response.data.longitude,
+        });
       }
+    } catch (error) {
+      // Handle your error here
+      console.error("Error fetching office profile:", error);
     }
   };
 
-  const handleEditOffice = async (alert) => {
+
+
+  const handleEditOffice = async (payload, alert) => {
     setErrors({
       name: "",
       state: "",
@@ -178,73 +194,63 @@ const EditOffice = () => {
       longitude: "",
       phone: "",
       zip_code: "",
+      featured_images: "",
     });
-    try {
-      const data = {};
-      if (office.city != officedf.city) {
-        data["city"] = office.city
-      }
-      if (office.state != officedf.state) {
-        data["state"] = office.state
-      }
-      if (office.address != officedf.address) {
-        data["address"] = office.address
-      }
-      if (office.email != officedf.email) {
-        data["email"] = office.email
-      }
-      if (office.latitude != officedf.latitude) {
-        data["latitude"] = office.latitude
-      }
-      if (office.longitude != officedf.longitude) {
-        data["longitude"] = office.longitude
-      }
-      if (office.phone != officedf.phone) {
-        data["phone"] = office.phone
-      }
-      if (office.zip_code != officedf.zip_code) {
-        data["zip_code"] = office.zip_code
-      }
-      if (office.name != officedf.name) {
-        data["name"] = office.name
-      }
-      data["delete_images"] = office.delete_images
-      data["id"] = office.id
 
-      const response = await controller.EditOfficeProfile(
-        //{
-        //   city: office.city,
-        //   state: office.state,
-        //   address: office.address,
-        //   email: office.email,
-        //   latitude: office.latitude,
-        //   longitude: office.longitude,
-        //   phone: office.phone,
-        //   zip_code: office.zip_code,
-        //   name: office.name,
-        //   delete_images: office.delete_images,
-        //   id: office.id,
-        // }
-        data
-      );
+    try {
+      const response = await controller.EditOfficeProfile({
+        ...payload,
+        id: office.id, // assuming the ID is necessary for the endpoint
+      });
 
       if (response.status === 400) {
-        setErrors(response.json);
-        setOffice({ ...office, delete_images: [] });
+        setErrors(response.json); // assuming your API returns errors in a json object
+        setOffice({ ...office, delete_images: [] }); // Reset delete images array
       } else {
-        setOffice({ ...office, delete_images: [] });
+        setOffice({ ...office, delete_images: [] }); // Reset delete images array
         if (alert) {
           notification.success({
             message: "Success",
-            description: "Edit Successful",
-            placement: "Success",
+            description: "Office information updated successfully",
+            placement: "topRight",
           });
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error updating office info:', error);
+      // You might want to show an error notification here
     }
   };
+
+  const updateName = () => {
+    const namePayload = { name: office.name };
+    handleEditOffice(namePayload, true);
+    setEditNameMode(false);
+  };
+
+
+  const updateContactInfo = () => {
+    const contactInfo = {
+      email: office.email,
+      phone: office.phone,
+    };
+    handleEditOffice(contactInfo, true);
+    setEditOfficeMode(false)
+  };
+
+  const updateLocationInfo = () => {
+    const locationInfo = {
+      city: office.city,
+      state: office.state,
+      address: office.address,
+      zip_code: office.zip_code,
+    };
+    handleEditOffice(locationInfo, true);
+    setEditLocationMode(false)
+  };
+
+
+
 
   const getGoogleLocation = async (
     latitude,
@@ -272,6 +278,8 @@ const EditOffice = () => {
       console.error("Error fetching location:", error);
     }
   };
+
+
 
   useEffect(() => {
     getOfficeProfile();
@@ -387,6 +395,8 @@ const EditOffice = () => {
     }
   };
 
+
+
   const inputStyle = {
     paddingTop: "2px",
     width: "100%",
@@ -412,32 +422,24 @@ const EditOffice = () => {
     borderRadius: "50%",
     cursor: "pointer",
     transition: "border-color 0.3s ease",
-    cursor: "pointer",
   };
   return (
     <DashboardLayout breadCrumb={false} logo={""} footerLogo={true}>
       <React.Fragment>
-        <Card
-          style={{
-            minHeight: "300px",
-            margin: "40px",
-            border: "none",
-            borderRadius: "8px",
-          }}
-          bodyStyle={{ padding: "32px" }}
+        <Card style={{
+          minHeight: "300px",
+          margin: "40px",
+          border: "none",
+          borderRadius: "8px",
+        }}
+          bodyStyle={{ padding: 0 }}
         >
-          <Row>
-            <Col xs={24} md={12}>
-              <p className="profile_editprofile">Edit Profile</p>
-            </Col>
-            <Col xs={24} md={12} className="profile_editicon">
-              <Title level={2}>
-                <EditOutlined />
-              </Title>
-            </Col>
-          </Row>
+          <div style={{ width: '100%' }}>
+            <img src={back} alt="" style={{ width: "100%" }} />
+          </div>
+
           <Row gutter={32}>
-            <Col span={24} className="profile_upload">
+            <Col span={5} className="profile_upload">
               <Upload
                 showUploadList={false}
                 beforeUpload={(e) => {
@@ -463,6 +465,7 @@ const EditOffice = () => {
                       Uploading
                     </Col>
                   </Row>
+
                 ) : (
                   <>
                     {logoFile ? (
@@ -487,219 +490,308 @@ const EditOffice = () => {
                 )}
               </Upload>
             </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Name</label>
-              <Input
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="name"
-                placeholder="Name of Your Office"
-                value={office.name}
-                size="large"
-              />
-              {errors.name && <p className="red">{errors.name}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Phone</label>
-              <Input
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="phone"
-                placeholder="Your phone number"
-                value={office.phone}
-                size="large"
-              />
-              {errors.phone && <p className="red">{errors.phone}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Email</label>
-              <Input
-                rows={4}
-                type="email"
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="email"
-                placeholder="email"
-                value={office.email}
-                size="large"
-              />
-              {errors.email && <p className="red">{errors.email}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">State</label>
-              <Input
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="state"
-                placeholder="State"
-                value={office.state}
-                size="large"
-              />
-              {errors.state && <p className="red">{errors.state}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">City</label>
-              <Input
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="city"
-                placeholder="City"
-                value={office.city}
-                size="large"
-              />
-              {errors.city && <p className="red">{errors.city}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Address</label>
-              <Input
-                rows={4}
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="address"
-                placeholder="address"
-                value={office.address}
-                size="large"
-              />
-              {errors.address && <p className="red">{errors.address}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Zip Code</label>
-              <Input
-                rows={4}
-                onChange={handleChange}
-                className="inputs input_profile"
-                name="zip_code"
-                placeholder="Zip Code"
-                value={office.zip_code}
-                size="large"
-              />
-              {errors.zip_code && <p className="red">{errors.zip_code}</p>}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">Location</label>
-              <input
-                id="locationInput"
-                type="text"
-                value={locationValue}
-                ref={inputRef}
-                style={inputStyle}
-                placeholder={`Current Location: ${localStorage.getItem("locationData") &&
-                  JSON.parse(localStorage.getItem("locationData")).name
-                  ? JSON.parse(localStorage.getItem("locationData")).name
-                  : ""
-                  }`}
-                onChange={(e) => {
-                  setLocationValue(e.target.value);
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = inputFocusStyle.borderColor;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = inputStyle.borderColor;
-                }}
-              />
-              {errors.longitude && <p className="red">{errors.longitude}</p>}
-              {errors.latitude && <p className="red">{errors.latitude}</p>}
-            </Col>
-          </Row>{" "}
-          <Row gutter={32}>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">
-                Office <span>{"(Max 10mb)"}</span>
-              </label>
-              <div className="clearfix">
-                <Upload
-                  listType="picture-card"
-                  fileList={officeFileList}
-                  onPreview={handlePreview}
-                  onChange={handleChangeOfficeImage}
-                  beforeUpload={(e) => {
-                    updateOfficeImage(e);
-                    return false;
-                  }}
-                  onRemove={handleDeleteImage}
-                  className="profile_upload-btn"
-                  accept="image/*"
-                  disabled={uploading}
-                >
-                  {uploading ? (
-                    <>
-                      <Spin /> Uploading
-                    </>
-                  ) : (
-                    uploadButton
-                  )}
-                </Upload>
-                <Modal
-                  visible={previewVisible}
-                  footer={null}
-                  onCancel={handleCancel}
-                >
-                  <img
-                    alt="example"
-                    style={{ width: "100%" }}
-                    src={previewImage}
+            <Col span={19} style={{ marginTop: 15, display: 'flex', flexDirection: 'row' }}>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                {editNameMode ? (
+                  <>
+                    <Input
+                      value={office.name}
+                      onChange={e => setOffice({ ...office, name: e.target.value })}
+                      style={{ width: '200px', height: 36, marginRight: '8px' }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: 24, fontWeight: '600', marginRight: 35 }}>{office.name}</span>
+                  </>
+                )}
+                {editNameMode ? (
+                  <Button
+                    type="text"
+                    icon={<img src={edit} alt="" />}
+                    onClick={updateName}
+                    style={{ color: "#979797" }}
                   />
-                </Modal>
-              </div>
-              {errors.office_images && (
-                <p className="red">{errors.office_images}</p>
-              )}
-            </Col>
-            <Col xs={24} md={12}>
-              <label className="inputLabel">
-                Featured <span>{"(Max 10mb)"}</span>
-              </label>
-              <div className="clearfix">
-                <Upload
-                  fileList={fileList}
-                  listType="picture-card"
-                  onPreview={handlePreview}
-                  onChange={handleChangeFeaturedImage}
-                  beforeUpload={(e) => {
-                    updateFeaturedImage(e);
-                    return false;
-                  }}
-                  onRemove={handleDeleteImage}
-                  className="profile_upload-btn"
-                  accept="image/*"
-                  disabled={uploading}
-                >
-                  {uploading ? (
-                    <>
-                      <Spin /> Uploading
-                    </>
-                  ) : (
-                    uploadButton
-                  )}
-                </Upload>
-                <Modal
-                  visible={previewVisible}
-                  footer={null}
-                  onCancel={handleCancel}
-                >
-                  <img
-                    alt="example"
-                    style={{ width: "100%" }}
-                    src={previewImage}
+                ) : (
+                  <Button
+                    type="text"
+                    onClick={() => setEditNameMode(true)}
+                    icon={<img src={edit} alt="" />}
+                    style={{ color: "#979797" }}
                   />
-                </Modal>
+                )}
+
               </div>
-              {errors.featured_images && (
-                <p className="red">{errors.featured_images}</p>
-              )}
+              <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row' }}>
+                <p style={{ marginRight: 3 }}><span style={{ fontSize: 16, fontWeight: '500' }}>4.7 </span><span style={{ fontSize: 10, fontWeight: '500', color: 'rgba(151, 151, 151, 1)' }}>/5</span></p>
+                <Rate
+                  disabled
+                  defaultValue={4.7}
+                  className="custom-rate"
+                />
+              </div>
             </Col>
           </Row>
-          <Row justifyContent="center" alignItems="center" display="flex">
-            <Col sm={24} className="profile_save-btn-container">
-              <Button
-                onClick={() => handleEditOffice(true)}
-                shape="round"
-                size={"large"}
-                className="profile_save-btn"
-              >
-                Save
-              </Button>
+          <Row gutter={[60, 60]} style={{ marginBottom: 30 }}>
+            <Col span={16} style={{ marginLeft: 46 }}>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+                <p style={{ fontSize: 18, fontWeight: '600', width: '100%' }}>Office Information</p>
+                <div style={{ marginLeft: 'auto' }}>
+                  {editOfficeMode ? (
+                    <Button
+                      type="text"
+                      icon={<img src={edit} alt="" />}
+                      onClick={
+                        updateContactInfo
+                      }
+                      style={{ color: "#979797" }}
+                    />
+                  ) : (
+                    <Button
+                      type="text"
+                      icon={<img src={edit} alt="" />}
+                      onClick={() => setEditOfficeMode(true)}
+                      style={{ color: "#979797" }}
+                    />
+                  )}
+
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'row', marginTop: 18, justifyContent: "space-between" }}>
+                {
+                  editOfficeMode ? (
+                    <>
+                      <Input
+                        name="phone"
+                        placeholder="Phone number"
+                        value={office.phone}
+                        onChange={handleChange}
+                        style={inputStyle}
+                      />
+                      <Input
+                        name="email"
+                        placeholder="Email"
+                        value={office.email}
+                        onChange={handleChange}
+                        style={inputStyle}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <p><span style={{ fontSize: 16 }}>Phone:</span> <span style={{ fontSize: 16, color: 'rgba(151, 151, 151, 1)' }}>{office.phone}</span></p>
+                      <p><span style={{ fontSize: 16 }}>Email:</span> <span style={{ fontSize: 16, color: 'rgba(151, 151, 151, 1)' }}>{office.email}</span></p>
+                    </>
+                  )
+                }
+
+              </div>
+
+              <Col xs={24} md={24} style={{ padding: 0 }}>
+                <label className="inputLabel" style={{ fontSize: 18, fontWeight: '600' }}>
+                  Office
+                </label>
+                <div className="clearfix">
+                  <Upload
+                    listType="picture-card"
+                    fileList={officeFileList}
+                    onPreview={handlePreview}
+                    onChange={handleChangeOfficeImage}
+                    beforeUpload={(e) => {
+                      updateOfficeImage(e);
+                      return false;
+                    }}
+                    onRemove={handleDeleteImage}
+                    lassName="custom-upload-list"
+                    accept="image/*"
+                    disabled={uploading}
+                  >
+                    <label className='formLabel '
+                      style={{
+                        color: "gray",
+                        backgroundColor: "none",
+                        display: "flex",
+                        height: "81px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: '8px',
+                        cursor: "pointer",
+                        maxWidth: "360px",
+                        minWidth: "unset",
+                        padding: "15px",
+                        flexDirection: 'column',
+                        fontSize: 10
+                      }
+                      }
+                    >
+                      <div style={{ top: -15, position: 'relative' }}>
+                        <img src={add} alt='' style={{}} />
+                      </div>
+                      <div style={{ color: '#B7B7B7', fontSize: 12, marginBottom: 5 }}>Drag and drop or Browse your files</div>
+                    </label>
+
+                  </Upload>
+                  <Modal
+                    visible={previewVisible}
+                    footer={null}
+                    onCancel={handleCancel}
+                  >
+                    <img
+                      alt="example"
+                      style={{ width: "100%" }}
+                      src={previewImage}
+                    />
+                  </Modal>
+                </div>
+                {errors.office_images && (
+                  <p className="red">{errors.office_images}</p>
+                )}
+              </Col>
+              <Col xs={24} md={24} style={{ padding: 0 }}>
+                <label className="inputLabel" style={{ fontSize: 18, fontWeight: '600' }}>
+                  Featured
+                </label>
+                <div className="clearfix">
+                  <Upload
+                    fileList={fileList}
+                    listType="picture-card"
+                    onPreview={handlePreview}
+                    onChange={handleChangeFeaturedImage}
+                    beforeUpload={(e) => {
+                      updateFeaturedImage(e);
+                      return false;
+                    }}
+                    onRemove={handleDeleteImage}
+                    className="profile_upload-btn"
+                    accept="image/*"
+                    disabled={uploading}
+                  >
+                    <label className='formLabel '
+                      style={{
+                        color: "gray",
+                        backgroundColor: "none",
+                        display: "flex",
+                        height: "81px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: '8px',
+                        cursor: "pointer",
+                        maxWidth: "360px",
+                        minWidth: "unset",
+                        padding: "15px",
+                        flexDirection: 'column',
+                        fontSize: 10
+                      }
+                      }
+                    >
+                      <div style={{ top: -15, position: 'relative' }}>
+                        <img src={add} alt='' style={{}} />
+                      </div>
+                      <div style={{ color: '#B7B7B7', fontSize: 12, marginBottom: 5 }}>Drag and drop or Browse your files</div>
+                    </label>
+                  </Upload>
+                  <Modal
+                    visible={previewVisible}
+                    footer={null}
+                    onCancel={handleCancel}
+                  >
+                    <img
+                      alt="example"
+                      style={{ width: "100%" }}
+                      src={previewImage}
+                    />
+                  </Modal>
+                </div>
+                {errors.featured_images && (
+                  <p className="red">{errors.featured_images}</p>
+                )}
+              </Col>
+            </Col>
+            <Col span={7}>
+              <div style={{ padding: '16px', maxWidth: '400px', margin: 'auto' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+                  <Title level={4}>Location Information</Title>
+                  <div style={{ marginLeft: 'auto' }}>
+                    {editLocationMode ? (
+                      <Button
+                        type="text"
+                        icon={<img src={edit} alt="" />}
+                        onClick={
+                          updateLocationInfo
+                        }
+                        style={{ color: "#979797" }}
+                      />
+                    ) : (
+                      <Button
+                        type="text"
+                        icon={<img src={edit} alt="" />}
+                        onClick={() => setEditLocationMode(true)}
+                        style={{ color: "#979797" }}
+                      />
+                    )}
+
+                  </div>
+                </div>
+                <Map
+                  center={[office.latitude || 0, office.longitude || 0]} // Provide default values if latitude or longitude is null
+                  zoom={15}
+                  scrollWheelZoom={true}
+                  style={{ height: '208px', width: '310px', marginTop: '30px', marginBottom: 30 }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  {office.latitude && office.longitude && ( // Render Marker only if latitude and longitude are available
+                    <Marker position={[office.latitude, office.longitude]}>
+                      <Popup>Dental Clinic</Popup>
+                    </Marker>
+                  )}
+                </Map>
+
+                <div style={{ marginTop: '16px', maxWidth: 310 }}>
+                  {
+                    editLocationMode ? (
+                      <>
+                        <Input
+                          name="state"
+                          placeholder="State"
+                          value={office.state}
+                          onChange={handleChange}
+                          style={inputStyle}
+                        />
+                        <Input
+                          name="city"
+                          placeholder="City"
+                          value={office.city}
+                          onChange={handleChange}
+                          style={inputStyle}
+                        />
+                        <Input
+                          name="address"
+                          placeholder="Address"
+                          value={office.address}
+                          onChange={handleChange}
+                          style={inputStyle}
+                        />
+                        <Input
+                          name="zip_code"
+                          placeholder="Zip Code"
+                          value={office.zip_code}
+                          onChange={handleChange}
+                          style={inputStyle}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <p><Text strong>State: </Text> <Text style={{ color: '#979797' }}>{office.state}</Text></p>
+                        <p><Text strong>City: </Text> <Text style={{ color: '#979797' }}>{office.city}</Text></p>
+                        <p><Text strong>Address: </Text> <Text style={{ color: '#979797' }}>{office.address}</Text></p>
+                        <p><Text strong>Zip Code: </Text> <Text style={{ color: '#979797' }}>{office.zip_code}</Text></p>
+                      </>
+                    )
+                  }
+                </div>
+              </div>
             </Col>
           </Row>
         </Card>

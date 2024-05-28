@@ -1,10 +1,7 @@
 import {
   Col,
-  Input,
-  Radio,
   Row,
-  Select,
-  message,
+  // message,
   notification,
   Card,
   Button,
@@ -13,81 +10,20 @@ import {
   Tag
 } from "antd";
 import React, { Component } from "react";
-import Chart from "react-apexcharts";
 import { connect } from "react-redux";
-import { controller } from "../../controller";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
-import BarChart from "./BarChart";
-import CustomTable from "./Components/CustomTable";
-import DashboardCard from "./Components/DashboardCard";
 import { Controller } from "./Controller/Controller";
 import "./style.css";
 import BlueCard from "./Components/BlueCard";
 import BarChartWithLabel from './Components/BarCharWithtLabel';
 import DashboardDonut from "./Components/DashboardDonut";
 import DonutChart from "../../New/component/DonutChart";
-import people from "../../assets/icons/people.png";
-import cards from "../../assets/icons/cards.png";
-import strongbox from "../../assets/icons/strongbox-2.png";
-import image from "../../assets/img/imgo2.jpg";
-const { Search } = Input;
-const { TextArea } = Input;
-const { Option } = Select;
+import people from "../../assets/icons/people.no-white.png";
+import cards from "../../assets/icons/cards.white.png";
+import strongbox from "../../assets/icons/strong-box-white.png";
 const { Meta } = Card
 
-const BarChartLabel = [
-  "Scaling",
-  "Root Planing",
-  "Polishing",
-  "Fluoride Gel",
-  "Fluoride Varnish",
-  "Oral Hygiene Instructions",
-  "Nightguard Maxillary",
-  "Nightguard Mandibular",
-  "Sealants",
-];
-const BarChartValue = [9.8, 9.4, 9.0, 8.6, 8.5, 6, 4.5, 4, 2.5];
 
-const BarChartLabel1 = ["Scaling", "Root Planing", "Polishing", "Fluoride Gel"];
-
-const BarChartValue1 = [9.8, 9.4, 9.0, 8.6];
-
-const BarChartLabel2 = [
-  "Posterior Composite Restoration",
-  "Bicuspid Composite Restoration",
-  "Anterior Composite Resortation",
-  "Extraction Uncomplicated",
-];
-const BarChartValue2 = [9.0, 8.4, 7.0, 5.6];
-
-const chartData = [
-  {
-    data: [6, 9, 5, 4]
-  }
-];
-
-const chartData2 = [
-  {
-    data: [4, 9, 8, 6]
-  }
-];
-
-const chartData3 = [
-  {
-    data: [40, 90, 80, 60, 40, 55, 72, 65],
-  }
-];
-
-const chartData4 = [
-  {
-    data: [40, 90, 80, 60, 40, 55, 72, 65, 90, 73, 54, 69],
-  }
-];
-
-const categories = ['Scaling', 'Root Planing', 'Fluoride Gel', 'Scaling'];
-const categories2 = ['Scaling', 'Root Planing', 'Fluoride Gel', 'Scaling', 'Scaling',
-  'Root Planing', 'Fluoride Gel', 'Scaling'];
-const categories3 = ['Jan', 'Feb', 'Mar', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'May', 'Apr', 'Jun']
 
 const columns = [
   {
@@ -123,24 +59,7 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    key: "1",
-    username: "John Brown",
-    subscription: "Membership Plan",
-    startdate: "2023/12/12",
-    expirydate: "2024/12/12",
-    status: "Active",
-  },
-  {
-    key: "2",
-    username: "John Brown",
-    subscription: "Membership Plan",
-    startdate: "2023/12/12",
-    expirydate: "2024/12/12",
-    status: "Active",
-  },
-];
+
 
 const columns1 = [
   {
@@ -159,11 +78,10 @@ const columns1 = [
     key: "subscription",
     render: (subscription) => (
       <Tag
-        color={subscription === "Active" ? "rgba(35, 208, 32, 0.2)" : "volcano"}
+        color={subscription === "active" ? "rgba(35, 208, 32, 0.2)" : "volcano"}
         style={{ borderRadius: "20px", color: "#23D020", width: 87, textAlign: 'center' }}
       >
-        {subscription}
-      </Tag>
+        {subscription ? subscription.charAt(0).toUpperCase() + subscription.slice(1) : ''}    </Tag>
     ),
   },
   {
@@ -171,63 +89,49 @@ const columns1 = [
     key: "action",
     render: (_, record) => (
       <span>
-        <Button type="link" >
-          View
+        <Button type="link">
+          <u>View</u>
         </Button>
       </span>
     ),
   },
 ];
 
-const data1 = [
-  {
-    key: "1",
-    username: "John Brown",
-    lastvisit: "2023/12/12",
-    subscription: "Active",
-
-  },
-  {
-    key: "2",
-    username: "John Brown",
-    lastvisit: "2023/12/12",
-    subscription: "Active",
-  },
-];
 
 
-const Config = {
-  headers: {
-    Authorization: localStorage.getItem("user")
-      ? "Token " + JSON.parse(localStorage.getItem("user")).key
-      : "",
-  },
-};
 
-const props = {
-  name: "file",
-  action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-  headers: {
-    authorization: "authorization-text",
-  },
-  onChange(info) {
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
+// const Config = {
+//   headers: {
+//     Authorization: localStorage.getItem("user")
+//       ? "Token " + JSON.parse(localStorage.getItem("user")).key
+//       : "",
+//   },
+// };
+
+// const props = {
+//   name: "file",
+//   action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+//   headers: {
+//     authorization: "authorization-text",
+//   },
+//   onChange(info) {
+//     if (info.file.status === "done") {
+//       message.success(`${info.file.name} file uploaded successfully`);
+//     } else if (info.file.status === "error") {
+//       message.error(`${info.file.name} file upload failed.`);
+//     }
+//   },
+// };
 
 class Dashboard extends Component {
   openNotification = (placement, message, status) => {
-    if (status && status.toLowerCase().search("success") != -1) {
+    if (status && status.toLowerCase().search("success") !== -1) {
       notification.success({
         message: status,
         description: message,
         placement,
       });
-    } else if (status && status.toLowerCase().search("error") != -1) {
+    } else if (status && status.toLowerCase().search("error") !== -1) {
       notification.error({
         message: status,
         description: message,
@@ -238,6 +142,33 @@ class Dashboard extends Component {
         message: status,
         description: message,
         placement,
+      });
+    }
+  };
+
+
+
+
+  getTreatmentplans = async () => {
+    try {
+      const response = await Controller.getTreatmentPlans(0);
+      console.log(response.json);
+
+      if (response && response.json) {
+        this.setState({
+          treatmentplans: response.json,
+          treatmentplansdesc: response.json.treatment_plans,
+        });
+      } else {
+        console.error("Unexpected response structure:", response);
+        this.setState({
+          treatmentplans: []
+        });
+      }
+    } catch (error) {
+      console.error("Error while fetching treatment plans:", error);
+      this.setState({
+        treatmentplans: []
       });
     }
   };
@@ -258,6 +189,7 @@ class Dashboard extends Component {
     });
   };
 
+
   getMrr = async () => {
     const response = await Controller.GetMRR();
     this.setState({
@@ -265,11 +197,22 @@ class Dashboard extends Component {
     });
   };
 
-  getMember = async () => {
-    const response = await Controller.TotalMembers();
+  getScore = async () => {
+    const response = await Controller.getScore(0);
     this.setState({
-      totalMember: response.json.Total_Members,
+      score: response.json,
     });
+  };
+
+
+  getMember = async () => {
+    try {
+      const response = await Controller.TotalMembers();
+      const totalMembers = response.json.Total_Members;
+      this.setState({ totalMember: totalMembers });
+    } catch (error) {
+      console.error("Error fetching total members:", error);
+    }
   };
 
   getMOM = async () => {
@@ -277,125 +220,104 @@ class Dashboard extends Component {
     this.setState({
       mom: response.json.mom,
     });
+
+  };
+  state = {
+    bar: [],
+    bar1: []
   };
 
   BarChart = async () => {
-    const response = await Controller.GetDashboardBarChart();
-    var categories = [];
-    var data = [];
+    try {
+      const response = await Controller.getBarTreatment();
 
-    for (var i in response.json) {
-      categories.push(i);
-      data.push(response.json[i]);
+      if (!response || !response.json) {
+        throw new Error('Invalid response or missing JSON data');
+      }
+
+      const data = response.json;
+
+      console.log('Data from server:', data);
+
+      const dataChart = data.plans ? data.plans.map(plan => plan.count) : [];
+      const categories = data.plans ? data.plans.map(plan => plan.name) : [];
+      const dataChart1 = data.preventive_plans ? data.preventive_plans.map(preventive => preventive.count) : [];
+      const categories1 = data.preventive_plans ? data.preventive_plans.map(preventive => preventive.name) : [];
+
+      this.setState({ bar: dataChart, categories: categories, bar1: dataChart1, categories1: categories1 });
+    } catch (error) {
+      console.error('Error fetching or processing data:', error);
+      // Handle error, show a message to the user, or perform appropriate action
     }
-    this.setState({
-      bar: {
-        options: {
-          chart: {
-            id: "apexchart-example",
-          },
-          xaxis: {
-            categories: categories,
-          },
-        },
-        series: [
-          {
-            name: "series-1",
-            data: data,
-          },
-        ],
-      },
-    });
   };
 
-  PyChartType = async (type) => {
-    const response = await Controller.GetDashboardPyChart(type);
-    var categories = [];
-    var data = [];
+  state = {
+    impact: []
+  }
 
-    for (var i in response.json) {
-      categories.push(i);
-      data.push(response.json[i]);
+  BarChart2 = async (page) => {
+    try {
+      const response = await Controller.getImpact(page);
+
+      const data = response.json.results;
+
+      console.log('pou', data)
+
+      const dataChart = data.map(plan => plan.impact);
+      const categories = data.map(plan => plan.name);
+
+      this.setState({ impact: dataChart, categories10: categories });
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
-    this.setState({
-      pie: {
-        series: data,
-        options: {
-          labels: categories,
-          chart: {
-            type: "donut",
-          },
-          responsive: [
-            {
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200,
-                },
-                legend: {
-                  position: "bottom",
-                },
-              },
-            },
-          ],
-        },
-      },
-    });
   };
 
-  PyChart = async () => {
-    const response = await Controller.GetDashboardPyChart(this.pieChartType);
-    var categories = [];
-    var data = [];
 
-    for (var i in response.json) {
-      categories.push(i);
-      data.push(response.json[i]);
-    }
-    this.setState({
-      pie: {
-        series: data,
-        options: {
-          labels: categories,
-          chart: {
-            type: "donut",
-          },
-          responsive: [
-            {
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200,
-                },
-                legend: {
-                  position: "bottom",
-                },
-              },
-            },
-          ],
-        },
-      },
-    });
+
+  state = {
+    chartDate: [],
+    dateCategories: []
   };
 
-  getData = () => {
-    this.getMrr();
+  fetchDataForBarChart = async () => {
+    try {
+      const response = await Controller.GetDashboardBarChart();
+      const data = await response.json;
 
-    this.getMember();
+      const categories = Object.keys(data);
+      const counts = Object.values(data);
 
-    this.getMOM();
+      this.setState({ chartDate: counts, dateCategories: categories });
+    } catch (error) {
+      console.error('Error fetching data for bar chart:', error);
+    }
+  };
 
-    this.getRecentActiveMember();
 
-    this.MembershipExpire();
 
-    this.BarChart();
 
-    this.PyChartType("year");
+  state = {
+    series: [],
+  };
+  fetchData = async (type) => {
+    try {
+      const response = await Controller.GetDashboardPyChart(type);
+      console.log('Raw API Response:', response);
+
+      const data = response.json;
+
+      const seriesData = Object.values(data);
+
+      this.setState({ series: seriesData });
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
   constructor(props) {
     super(props);
+
     this.getData();
 
     this.state = {
@@ -455,10 +377,7 @@ class Dashboard extends Component {
     this.handleChangePieChartType = this.handleChangePieChartType.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
-  componentDidMount() {
-    this.updateWindowDimensions();
-    window.addEventListener("resize", this.updateWindowDimensions);
-  }
+
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateWindowDimensions);
@@ -483,9 +402,58 @@ class Dashboard extends Component {
     const { name, value } = e.target;
     this.setState({ [name]: value });
   }
+  componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener("resize", this.updateWindowDimensions);
+    this.getData();
+  }
+
+  async getData() {
+    await Promise.all([
+      this.getMrr(),
+      this.getMember(),
+      this.getMOM(),
+      this.getRecentActiveMember(),
+      this.MembershipExpire(),
+      this.BarChart(),
+      this.getTreatmentplans(),
+      this.getScore(),
+      this.fetchData("year"),
+      this.BarChart2(1),
+      this.fetchDataForBarChart()
+    ]);
+  }
+
+
+
 
   render() {
     const { profileSummary } = this.props;
+    const { totalMember } = this.state;
+    const { mrr } = this.state;
+    const { score } = this.state;
+    const { mom } = this.state;
+    const { recentActiveMembers } = this.state;
+    const { expireSubMembers } = this.state;
+    const data = expireSubMembers.map(plan => ({
+      key: plan.customer_id.toString(),
+      username: plan.customer_name ? plan.customer_name : "-",
+      subscription: plan.plan_name || "-",
+      startdate: plan.start_date ? plan.start_date : 0,
+      expirydate: plan.expiration_date ? plan.expiration_date : "-",
+
+    }))
+    const data1 = recentActiveMembers.map(plan => ({
+      key: plan.customer_id.toString(),
+      username: plan.customer_name ? plan.customer_name : "-",
+      lastvisit: plan.last_visit || "-",
+      subscription: plan.status ? plan.status : "-",
+    }))
+
+
+
+
+
     return (
       <DashboardLayout
         breadCrumb={false}
@@ -504,380 +472,204 @@ class Dashboard extends Component {
         >
           <Col xs={24} >
             <Card>
-              <div className="flex-row-evenly">
-                <BlueCard name={"Total Member"} value={"1300"} icon={people} />
-                <BlueCard name={"MRR"} value={"$0.00"} icon={strongbox} />
-                <BlueCard name={"MoM Growth"} value={"$0.00"} icon={cards} />
+                  <div className="flex-row-evenly">
+                    <div style={{ width: 430, height: 108, display: 'flex', alignItems: 'center', flexDirection: 'row', background: 'rgba(223, 218, 255, 0.7)', borderRadius: '8px' }}>
+                      <div className='circle' style={{ marginLeft: 15 }}>
+                        <img className='icon-center' src={people} alt='' />
+                      </div>
+                      <div style={{ marginLeft: 20 }}>
+                        <div style={{ fontSize: 20, fontWeight: 400, color: '#4D3280', marginBottom: 5 }}>Total Member </div>
+                        <div style={{ fontSize: 24, color: "#5D3B9C", fontWeight: 700, }}>{totalMember}</div>
+                      </div>
+                    </div>
+                    <div style={{ width: 430, height: 108, display: 'flex', alignItems: 'center', flexDirection: 'row', background: 'rgba(223, 218, 255, 0.7)', borderRadius: '8px' }}>
+                      <div className='circle' style={{ marginLeft: 15 }}>
+                        <img className='icon-center' src={strongbox} alt='' />
+                      </div>
+                      <div style={{ marginLeft: 20 }}>
+                        <div style={{ fontSize: 20, fontWeight: 400, color: '#4D3280', marginBottom: 5 }}>MRR </div>
+                        <div style={{ fontSize: 24, color: "#5D3B9C", fontWeight: 700, }}>{mrr}</div>
+                      </div>
+                    </div>
+                    <div style={{ width: 430, height: 108, display: 'flex', alignItems: 'center', flexDirection: 'row', background: 'rgba(223, 218, 255, 0.7)', borderRadius: '8px' }}>
+                      <div className='circle' style={{ marginLeft: 15 }}>
+                        <img className='icon-center' src={cards} alt='' />
+                      </div>
+                      <div style={{ marginLeft: 20 }}>
+                        <div style={{ fontSize: 20, fontWeight: 400, color: '#4D3280', marginBottom: 5 }}> MoM Growth </div>
+                        <div style={{ fontSize: 24, color: "#5D3B9C", fontWeight: 700, }}>{mom}</div>
+                      </div>
+                    </div>
+                  </div>
+            </Card>
+          </Col>
+          <Col xs={24} md={8} lg={8}>
+            <Card className="card-dounat">
+              <p className="card-title" style={{ textAlign: 'left', width: '100%' }}>
+                Memberships
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <div style={{ width: '100%' }}> {/* Wraps the chart and allows it to maintain its intrinsic width while being centered */}
+                  <DashboardDonut series={this.state.series} labels={['Plan 1', 'Plan 2']} />
+                </div>
               </div>
             </Card>
           </Col>
+
+
           <Col xs={24} md={8} lg={8}>
-            <Card className="card-height">
-              <p className="card-title">
-                Memberships
-              </p>
-              <DashboardDonut />
-            </Card>
-          </Col>
-          <Col xs={24} md={8} lg={8}>
-            <Card>
-              <p className="card-title">
+            <Card className="card-bar">
+              <p className="card-title1">
                 Most Common Treatments
               </p>
-              <BarChartWithLabel chartdata={chartData} categories={categories} rotate={-45} />
+              {this.state.bar ? (
+                <div style={{ width: '100%' }}>
+                  <BarChartWithLabel chartdata={this.state.bar} categories={this.state.categories} rotate={-45} height={300} />
+                </div>
+
+              ) : (
+                <BarChartWithLabel categories={this.state.categories} rotate={-45} height={300} />
+              )}
             </Card>
           </Col>
           <Col xs={24} md={8} lg={8}>
-            <Card>
-              <p className="card-title2">
+            <Card className="card-bar">
+              <p className="card-title1">
                 Most Common Preventive Treatments
               </p>
-              <BarChartWithLabel chartdata={chartData2} categories={categories} rotate={-45} />
+              {this.state.bar1 ? (
+                <BarChartWithLabel chartdata={this.state.bar1} categories={this.state.categories1} rotate={-45} height={300} />
+              ) : (
+                <BarChartWithLabel categories={this.state.categories1} rotate={-45} height={300} />
+              )}
             </Card>
           </Col>
           <Col xs={24} md={16} lg={16} >
-            <p className="card-title2">
+            <p className="card-title3">
               Impact of Preventive Treatments
             </p>
-            <Card>
-              <div className="border-padding">
-                <BarChartWithLabel chartdata={chartData3} categories={categories2} rotate={-45} />
-              </div>
+            <Card style={{ height: 480 }}>
+              {this.state.impact ? (
+                <div className="border-padding">
+                  <BarChartWithLabel chartdata={this.state.impact} categories={this.state.categories10} rotate={-45} height={375} />
+                </div>
+              ) : (
+                <div className="border-padding">
+                  <BarChartWithLabel categories={this.state.categories10} rotate={-45} height={330} />
+                </div>
+              )}
+
             </Card>
           </Col>
           <Col xs={24} md={8} lg={8} className="col-margin" >
-            <Card>
-              <p className="card-title">
-                Preventative Core Score
+            <Card style={{ marginTop: 10, height: 480 }}>
+              <p className="card-title1">
+                Preventive Care Score
               </p>
-              <DonutChart
-                fillPercentage={98}
-                label="Preventative Core Score"
-                Value="9.8"
-                height='330px'
-                fontSize="22px"
-              />
+              {this.state.score && (
+                <DonutChart
+                  fillPercentage={this.state.score.preventive_care_score}
+                  label="Preventive Care Score"
+                  Value={this.state.score.preventive_care_score}
+                  height='330px'
+                  fontSize="22px"
+                />
+              )}
             </Card>
           </Col>
-          <Col xs={24} md={16} lg={16} >
-            <div
-              className="row-flex-space"
-            >
-              <p className="card-title2">Updated Treatment Plans</p>
-              <Button
-                className="button-primary"
-              >
-                Details
-              </Button>
-            </div>
-            <Row gutter={[20, 25]}>
-              <Col xs={24} md={24} lg={24}>
-                <Card className="radius-card">
-                  <div
-                    className="space-between"
-                  >
-                    <div
-                      className="avatar"
-                    >
-                      <Avatar className="align-self" size={70} shape="circle" src={image} />
-                      <Meta
-                        className="align-left"
-                        title="John Bing "
-                        description="john91"
-                      />
-                      <Meta
-                        className="card2"
-                        title='5 updated Treatment Plans'
-                        description='includes: Crown Tooth 15, Root Canal Tooth 15, Night Guard, ...'
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} md={24} lg={24}>
-                <Card className="radius-card">
-                  <div
-                    className="space-between"
-                  >
-                    <div
-                      className="avatar"
-                    >
-                      <Avatar className="align-self" size={70} shape="circle" src={image} />
-                      <Meta
-                        className="align-left"
-                        title="John Bing "
-                        description="john91"
-                      />
-                      <Meta
-                        className="card2"
-                        title='5 updated Treatment Plans'
-                        description='includes: Crown Tooth 15, Root Canal Tooth 15, Night Guard, ...'
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} md={24} lg={24}>
-                <Card className="radius-card">
-                  <div
-                    className="space-between"
-                  >
-                    <div
-                      className="avatar"
-                    >
-                      <Avatar className="align-self" size={70} shape="circle" src={image} />
-                      <Meta
-                        className="align-left"
-                        title="John Bing "
-                        description="john91"
-                      />
-                      <Meta
-                        className="card2"
-                        title='5 updated Treatment Plans'
-                        description='includes: Crown Tooth 15, Root Canal Tooth 15, Night Guard, ...'
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          </Col>
-          <Col xs={24} md={8} lg={8} >
-            <Card>
-              <p className="card-title">
+          <div style={{ width: '66%' }}>
+            <Col span={24}>
+              <div>
+                <div className="row-flex-space13" style={{ width: '100%' }}>
+                  <p className="card-title3" onClick={() => { console.log(this.state.treatmentplans) }}> Updated Treatment Plans</p>
+                  <Button className="button-primary" style={{ marginLeft: "auto" }}>Details</Button>
+                </div>
+
+                {this.state.treatmentplans && this.state.treatmentplans.map((plan) => (
+                  <Row gutter={[20, 20]}>
+                    <Col xs={24} md={24} lg={24} style={{ marginBottom: 8 }}>
+                      <div key={plan.id}>
+                        <Card className="radius-card">
+                          {/* Changed the layout to use flexDirection: 'column' to stack children vertically */}
+                          <div className="space-between" style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div className="avatar">
+                              <Avatar
+                                className="align-self"
+                                size={85}
+                                shape="circle"
+                                src={plan.profile_picture}
+                                style={{ alignSelf: 'center', marginBottom: 8 }}  // Center the avatar and add margin below
+                              />
+                              <Meta
+                                className="align-left"
+                                style={{ width: 150, marginLeft: 30 }}  // Center the text of Meta component
+                                title={plan.first_name + " " + plan.last_name}
+                                description='john91'
+                              />
+                            </div>
+                            <Meta
+                              className="card2"
+                              title={`${plan.updated_plans ? plan.updated_plans : ''} updated Treatment Plans`}
+                              description={plan.treatment_plans.description ? this.state.treatmentplansdesc.description : "-"}
+                              style={{ marginTop: 16 }}  // Add space between Meta components
+                            />
+                          </div>
+                        </Card>
+                      </div>
+                    </Col>
+
+                  </Row>
+                ))}
+
+              </div>
+            </Col>
+          </div>
+          < Col span={8}  >
+            <Card style={{ height: 480, marginTop: 10, }}>
+              <p className="card-title1">
                 Treatment Plan Execution Score
               </p>
-              <DonutChart
-                fillPercentage={69}
-                label="Treatment Plan Execution Score"
-                Value="6.9"
-                height='330px'
-                fontSize="22px"
-              />
+              {score && (
+                <DonutChart
+                  fillPercentage={this.state.score.executaion_score * 10}
+                  label="Treatment Plan Execution Score"
+                  Value={this.state.score.executaion_score}
+                  height='360px'
+                  fontSize="22px" />
+              )}
+
             </Card>
-          </Col>
-          <Col xs={24} md={14} lg={14}>
-            <p className="card-title2">Subcribtion about to expire </p>
+          </Col><Col xs={24} md={14} lg={14}>
+            <p className="card-title3">Subscription about to expire </p>
             <Table
               className="dashboard-table"
               columns={columns}
               dataSource={data}
-              pagination={false}
-            />
-          </Col>
-          <Col xs={24} md={10} lg={10}>
-            <p className="card-title2">Recently Active Members</p>
+              pagination={false} />
+          </Col><Col xs={24} md={10} lg={10}>
+            <p className="card-title3">Recently Active Members</p>
             <Table
               className="dashboard-table"
               columns={columns1}
               dataSource={data1}
-              pagination={false}
-            />
-          </Col>
-          <Col xs={24} md={24} lg={24}>
-            <p className="card-title2">New Members</p>
+              pagination={false} />
+          </Col><Col xs={24} md={24} lg={24}>
+            <p className="card-title3">New Members</p>
             <Card>
-              <div className="border-padding">
-                <BarChartWithLabel chartdata={chartData4} categories={categories3} />
-              </div>
-            </Card>
-          </Col>
-          {/* <Col
-            span={this.state.width < 740 ? 24 : 12}
-            className="dashboard_card"
-            justify="middle"
-          >
-            <DashboardCard
-              name="Treatment Plan Execution Score"
-              value={4.8}
-              color="red"
-            />
-            <div className="dashboard_card-preventative">
-              <DashboardCard
-                name="Preventative Care Score"
-                value={6.2}
-                color="green"
-              />
-            </div>
-          </Col> */}
-          {/* <Col
-            span={this.state.width < 740 ? 24 : 12}
-            style={
-              this.state.width < 740
-                ? { marginLeft: "0px" }
-                : { margin: "0px", width: "49%" }
-            }
-          > */}
-            {/* <Card>
-              <h5> Impact of Preventive Treatments </h5>
-              <BarChart
-                style={{ position: "inherit" }}
-                label={BarChartLabel}
-                value={BarChartValue}
-                name="Prevention Impact Score"
-              />
-            </Card>
-          </Col> */}
-        </Row>
-        {/* <Row
-          type="flex"
-          justify="space-between"
-          className="membership_barchart"
-        >
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card>
-              <h5>Most Common Preventive Treatments</h5>
-              <BarChart
-                style={{ position: "inherit" }}
-                label={BarChartLabel1}
-                value={BarChartValue1}
-                name="Common Preventative Treatments"
-              />
-            </Card>
-          </Col>
-
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card>
-              <h5>Most Common Treatments</h5>
-              <BarChart
-                style={{ position: "inherit" }}
-                label={BarChartLabel2}
-                value={BarChartValue2}
-                name="Common Treatments"
-              />
+              {this.state.chartDate ? (
+                <div className="border-padding">
+                  <BarChartWithLabel chartdata={this.state.chartDate} categories={this.state.dateCategories} rotate={0} height={300} />
+                </div>
+              ) : (
+                <div className="border-padding">
+                  <BarChartWithLabel categories={this.state.dateCategories} rotate={0} />
+                </div>
+              )}
             </Card>
           </Col>
         </Row>
 
-        <Row
-          type="flex"
-          justify="space-between"
-          className="membership_barchart"
-        >
-          <DashboardCard name="Total Member" value={this.state.totalMember} />
-          <DashboardCard name="MRR" value={this.state.mrr} />
-          <DashboardCard
-            name="MoM Growth"
-            value={this.state.mom ? this.state.mom : "-"}
-          />
-        </Row>
-        <Row
-          type="flex"
-          justify="space-between"
-          className="membership_barchart"
-        >
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card>
-              <p className="membership_f16b">New members</p>
-              <div className="payreq-container">
-                <Chart
-                  options={this.state.bar.options}
-                  series={this.state.bar.series}
-                  type="bar"
-                  width={450}
-                  height={320}
-                />
-              </div>
-            </Card>
-          </Col>
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card bodyStyle={{ paddingBottom: "54px" }}>
-              <Row type="flex" justify="space-between">
-                <p className="membership_f16b">Memberships</p>
-
-                <Radio.Group
-                  value={this.state.pieChartType}
-                  onChange={this.handleChangePieChartType}
-                >
-                  <Radio.Button value="year">Year</Radio.Button>
-                  <Radio.Button value="month">Month</Radio.Button>
-                  <Radio.Button value="day">Day</Radio.Button>
-                </Radio.Group>
-              </Row>
-              <div className="payreq-container">
-                <Chart
-                  options={this.state.pie.options}
-                  series={this.state.pie.series}
-                  type="donut"
-                  width={450}
-                  height={320}
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row>
-        <Row
-          type="flex"
-          justify="space-between"
-          className="membership_barchart"
-        >
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card>
-              <p className="membership_f16b">Recently active members</p>
-              <div className="payreq-container">
-                <CustomTable
-                  rows={this.state.recentActiveMembers}
-                  type="memberList"
-                />
-              </div>
-            </Card>
-          </Col>
-          <Col
-            span={this.state.width < 1189 ? 24 : null}
-            style={
-              this.state.width < 1189
-                ? { marginLeft: "0px" }
-                : { width: "49%", margin: "0px" }
-            }
-          >
-            <Card>
-              <p className="membership_f16b">Subcribtion about to expires</p>
-              <div className="payreq-container">
-                <CustomTable
-                  mode="expireSub"
-                  rows={this.state.expireSubMembers}
-                  type="memberList"
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row> */}
-      </DashboardLayout>
+      </DashboardLayout >
     );
   }
 }

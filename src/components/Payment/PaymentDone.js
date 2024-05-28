@@ -16,7 +16,8 @@ class PaymentDone extends Component {
 
 
     const getData = async () => {
-      if (localStorage.getItem("paymentId")) {
+      const {selectediD} = this.props
+      if (selectediD) {
         while (!this.state.haveRecipt && this.state.payment_data.mode != "installment") {
           if (maxCounter <= counter) {
             this.setState({
@@ -27,9 +28,9 @@ class PaymentDone extends Component {
 
           counter = counter + 1
           const response = await Paymentcontroller.get_payment_data(
-            localStorage.getItem("paymentId")
+            selectediD
           );
-          localStorage.setItem("paymentIdPrint", localStorage.getItem("paymentId"));
+          localStorage.setItem("paymentIdPrint", selectediD);
           //localStorage.removeItem("paymentId");
           if (response.receipt_file)
             this.setState({

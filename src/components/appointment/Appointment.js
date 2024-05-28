@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import { dashboardActions } from "../../actions";
 import {
-  Popconfirm,
   Button,
   Modal,
-  Row,
   DatePicker,
   notification,
-  Typography,
-  Pagination,
-  Divider,
+  Card,
   Table,
+  Space,
+  Typography,
+  Tabs
 } from "antd";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import { controller } from "../../controller";
@@ -18,6 +17,14 @@ import { connect } from "react-redux";
 import moment from "moment";
 import dayjs from "dayjs";
 import "./style.css";
+
+import edit from '../../assets/icons/edit.png';
+import arrow from '../../assets/icons/arrow-left.png';
+import tick from '../../assets/icons/tick-circle.png';
+
+const { Title } = Typography;
+const { TabPane } = Tabs;
+
 
 class Appointments extends Component {
   openNotification = (placement, message, status) => {
@@ -46,6 +53,8 @@ class Appointments extends Component {
     this.getLogo();
     this.getData();
     this.state = {
+      isEditing: false, 
+      selectedDate: dayjs("2015-01-01", { format: "YYYY-MM-DD" }),
       currentPage: 1,
       page_size: 1,
       page: 1,
@@ -104,6 +113,7 @@ class Appointments extends Component {
     this.setState({
       loadingApprove: false,
       editAppointment: false,
+      isEditing: false
     });
   };
 
@@ -130,6 +140,20 @@ class Appointments extends Component {
     this.setState({
       editAppointment: false,
     });
+  };
+
+  onSelectDate = (date) => {
+    this.setState({ selectedDate: date });
+  };
+
+  // Handler for when the user confirms the new date selection
+  onOk = () => {
+    this.setState({ ApproveModalEditAppointment: this.selectedDate });
+  };
+
+  // Handler for when the user clicks the edit icon to enable editing
+  onEditClick = () => {
+    this.setState({ isEditing: true });
   };
 
   getData = async () => {
@@ -175,7 +199,8 @@ class Appointments extends Component {
 
     const columns = [
       {
-        title: "Patient",
+        title: "Patient  Name",
+        width: '179px',
         render: (_, record) => {
           return (
             <>
@@ -189,7 +214,38 @@ class Appointments extends Component {
         },
       },
       {
+        title: "Appointment Date & Time",
+        width: '252px',
+        render: (_, record) => {
+          return (
+            <>
+             {this.state.isEditing ? ( // If in edit mode, render DatePicker for editing
+          <DatePicker
+            suffixIcon={<img src={arrow} alt="" />}
+            style={{ width: 220, height: 34, borderRadius: '8px', border: '1px solid #6B43B5' }}
+            disabledDate={(current) => dayjs().subtract(1, "day") >= dayjs(current)}
+            onChange={this.onSelectDate}
+            defaultValue={this.state.selectedDate}
+            showTime
+            placeholder="Select Time"
+            onOk={this.onOk}
+            className="w100p"
+            size="large"
+          />
+        ) : (
+          // Otherwise, render the selected date
+          <>
+            <div>{record.appointment_datetime}</div>
+            
+          </>
+        )}
+            </>
+          );
+        },
+      },
+      {
         title: "Provider",
+        width: '162px',
         render: (_, record) => {
           return (
             <>
@@ -201,7 +257,8 @@ class Appointments extends Component {
         },
       },
       {
-        title: "Appointment type",
+        title: "Service",
+        width: '164px',
         render: (_, record) => {
           return (
             <>
@@ -213,87 +270,67 @@ class Appointments extends Component {
         },
       },
       {
-        title: "Amount",
+        title: "Clinic Name",
+        width: '153px',
         render: (_, record) => {
           return <>{record.amount}$</>;
         },
       },
-      {
-        title: "Payment method",
-        dataIndex: "payment_method",
-        key: "payment_method",
-      },
-      {
-        title: "Date",
-        render: (_, record) => {
-          return (
-            <>
-              {record.appointment_datetime
-                ? new Date(record.appointment_datetime).toLocaleDateString() +
-                " " +
-                new Date(record.appointment_datetime).toLocaleTimeString()
-                : "-"}
-            </>
-          );
-        },
-      },
+
       {
         title: "Action",
+        width: '130px',
         render: (_, record) => {
           return (
             <>
-              <Typography.Text
-                className="appointment_edit"
-                onClick={() => {
-                  this.openModalEditAppointment(
-                    record.appointment_datetime,
-                    record.id
-                  );
-                }}
-              >
-                Edit
-              </Typography.Text>
-              <Divider type="vertical" />
-              <Popconfirm
-                title="Are you sure to approve this appointment?"
-                onConfirm={() => {
-                  this.handleApprove(record.appointment_datetime, record.id);
-                }}
-              >
-                <Typography.Text className="appointment_approve">
+              <Space size="middle">
+                <Button type="primary" style={{ background: '#6B43B5', width: 75, height: 26, fontSize: 10 }} onClick={() => { this.handleApprove(record.appointment_datetime, record.id) }}>
                   Approve
-                </Typography.Text>
-              </Popconfirm>
+                </Button>
+                {this.state.isEditing ? (
+                <Button
+                  type="text"
+                  icon={<img src={tick} alt="" />}
+                  style={{ color: "#979797" }}
+                  onClick={this.ApproveModalEditAppointment}
+                />
+                ) : (<Button
+                  type="text"
+                  icon={<img src={edit} alt="" />}
+                  style={{ color: "#979797" }}
+                  onClick={this.onEditClick}
+                />) }
+              </Space>
             </>
           );
         },
       },
     ];
+
+   
+
     return (
       <DashboardLayout
         breadCrumb={"Appointments"}
         logo={profileSummary && profileSummary.logo ? profileSummary.logo : ""}
         footerLogo={this.state.serverLogo}
       >
-        <div className="paymentRequestContent">
-          <Table
-            columns={columns}
-            dataSource={this.state.AppointmentList}
-            style={{ marginTop: "15px" }}
-            pagination={false}
-          />
-          <Row type="flex" justify="end" className="mt15">
-            <Pagination
-              showSizeChanger={false}
-              hideOnSinglePage={true}
-              current={this.state.currentPage}
-              total={this.state.page_size}
-              onChange={this.handlePageChange}
-              className="paginator"
-              size="small"
-            />
-          </Row>
-        </div>
+        <Title level={4} style={{ marginBottom: 40, marginTop: 57, marginLeft: 32 }}>Appointments</Title>
+        <Card style={{ width: '95%', padding: 0, marginLeft: 32 }}>
+          <Tabs defaultActiveKey="1" style={{ borderBottom: 'none'}} >
+            <TabPane tab="Pending" key="1">
+              <Table
+                style={{marginTop: 5}}
+                columns={columns}
+                dataSource={this.state.AppointmentList}
+                pagination={false}
+              />
+            </TabPane>
+            <TabPane tab="Approved" key="2">
+              {/* Render Approved Appointments here */}
+            </TabPane>
+          </Tabs>
+        </Card>
         <Modal
           footer={[
             <Button
