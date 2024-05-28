@@ -1,0 +1,96 @@
+.profile_editprofile {
+  font-size: 20px;
+  color: black;
+  font-weight: 500;
+}
+
+.profile_editicon {
+  justify-content: flex-end;
+  display: flex;
+}
+
+.profile_upload {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.profile_upload-btn {
+  margin: 0px !important;
+}
+
+.profile_upload-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 55px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.input_profile {
+  padding: 12px 22px;
+}
+
+.red {
+  color: red;
+}
+
+.profile_save-btn-container {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.profile_save-btn {
+  padding: 0 45px !important;
+  height: 60px !important;
+}
+
+.menu_item {
+  display: flex;
+  align-items: center;
+}
+
+.check_review {
+  font-size: 20px;
+  color: black;
+  font-weight: 500;
+}
+ 
+.filter_btn {
+  width: 250px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  background-color: #f8f8f8;
+  color: #b7b7b7;
+  border: none;
+  margin-bottom: 40px;
+  padding: 25px 18px;
+}
+
+.filter_span {
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.filter_span2 {
+  justify-content: space-between;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.review_m0 {
+  margin: 0px;
+}
+
+.review_card {
+  width:  calc(100% - 40px);
+  margin:  20px;
+  overflow-y:  auto;
+  border:  none;
+  border-radius:  8px;
+}

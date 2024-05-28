@@ -1,0 +1,9 @@
+.ant-radio-button-wrapper-checked {
+    color: white !important;
+    background: #6b43b5 !important;
+    -webkit-box-shadow: none !important;
+}
+
+.mt8{
+    margin-top: 8px;
+}

@@ -1,0 +1,196 @@
+.barchart_container {
+  padding: 5px;
+  width: 100%;
+} 
+
+.createbusiness_container {
+  margin: 5%;
+  min-width: 500px;
+  min-height: 300px;
+}
+
+.createbusiness_button-container {
+  margin-bottom: 0px;
+  margin-top: 10%;
+  display: flex;
+  justify-content: end;
+}
+
+.createbusiness_button {
+  margin-left: 5px;
+}
+
+.dbf-jce {
+  display: flex;
+  justify-content: end;
+}
+
+.dbf-jcc {
+  display: flex;
+  justify-content: end;
+} 
+
+.membership_button-container {
+  margin-top: "15px";
+  display: flex;
+  justify-content: end;
+} 
+
+.membership_h10-action {
+  border: 0px;
+  background-color: transparent;
+  color: #0981c8;
+} 
+
+.membership_table_wo {
+  width: auto;
+  overflow: auto;
+} 
+
+.membership_btn_add {
+  height: 30px;
+  width: 90px;
+}
+
+.dashboard_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 49%;
+}
+
+.dashboard_card-preventative {
+  margin-top: 15px;
+  height: 100%;
+}
+
+.membership_barchart {
+  margin: 0px 7px;
+  padding: 10px;
+}
+
+.membership_f16b {
+  font-size: 16px;
+  font-weight: bold;
+} 
+
+.membership_dc {
+  display: contents;
+}
+ 
+.membership_patientcard {
+  width: 97%;
+  margin: 20px;
+  padding: 20px;
+} 
+
+.flex-row-evenly {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-evenly !important;
+}
+
+.card-height {
+  min-height: 335px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 22px;
+  color:  #000;
+  /* font-weight: bold; */
+  margin-bottom: 50px;
+}
+
+.card-title2 {
+  font-size: 22px;
+  color:  #000;
+  font-weight: 700px !important;
+}
+
+.col-margin {
+  margin-top: 50px;
+}
+
+.border-padding {
+  padding: 19px;
+  border: 1px solid #F0F0F0;
+  border-radius: 8px;
+}
+
+.row-flex-space {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.button-primary {
+  width: 97px !important ;
+  margin-left: auto !important ;
+  border: 1px solid #6B43B5;
+  color: #6B43B5;
+}
+
+.space-between {
+  display: flex !important ;
+  flex-direction: row !important ;
+  justify-content: space-between !important ;
+}
+
+.avatar{
+  display: flex !important ;
+  flex-direction: row !important ;
+  width: 100% !important;
+  align-items: center  !important ;
+  justify-content: center  !important ;
+}
+
+.align-left {
+  display: flex !important ;
+  align-items: center !important ;
+  margin-left: 15px !important ;
+  margin-bottom: 10px  !important ;
+
+}
+
+.card2 {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center;
+  margin-left: 150px !important;
+}
+
+.radius-card {
+  border-radius: 1000px  !important;
+  width: 100% !important;
+}
+
+.align-self {
+  display: flex;
+  align-self: center !important;
+  margin-bottom: 10px;
+}
+
+.align-left .ant-card-meta-title {
+  font-size: 20px !important; /* Adjust the size as needed */
+  font-weight: 400px !important;
+}
+
+.align-left .ant-card-meta-description {
+  font-size: 16px !important; /* Adjust the size as needed */
+  font-weight: 400px !important;
+}
+
+.dashboard-table {
+  border-radius: 8px !important;
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15) !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.square-avatar.ant-avatar {
+  border-radius: 0 !important; 
+}

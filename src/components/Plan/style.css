@@ -1,0 +1,34 @@
+.plan_table {
+  width: auto;
+  overflow: auto;
+}
+
+.newplan_container {
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.newplan_btn {
+  color: white;
+}
+
+.plan_edit {
+  color: green;
+  cursor: pointer;
+}
+
+.plan_delete {
+  color: red;
+  cursor: pointer;
+}
+
+.plan_loading {
+  min-width: 100px;
+  margin-left: 5px;
+}
+
+.plan_close {
+  display: flex;
+  justify-content: end;
+  margin-top: 15px;
+}

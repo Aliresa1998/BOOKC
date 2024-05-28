@@ -1,0 +1,75 @@
+.mwf {
+  min-width: fit-content;
+}
+
+.spin {
+  margin: 20%;
+  display: block;
+}
+
+.cg {
+  color: green;
+}
+
+.pending {
+  color: red;
+  cursor: pointer;
+}
+
+.error_message {
+  width: 500px;
+  font-size: 24px;
+  margin: 50px auto auto auto;
+  text-align: center;
+  color: #999;
+}
+
+.payment_content-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.payment_content-totalBox {
+  margin-top: 5px;
+  margin-right: 5px;
+  margin-left: 5px;
+  flex-grow: 2;
+}
+
+.send_btn {
+  margin-top: 5px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.mw430 {
+  min-width: 430px;
+}
+
+.sent {
+  width: auto;
+  align-items: flex-start;
+}
+
+.payment_data {
+  max-width: 400px;
+  margin-left: 10%;
+}
+
+.tag_reason {
+  margin-right: 0px;
+  margin-left: 2px;
+}
+
+.invoice_color {
+  color: #722ed1;
+}
+
+.lineHeightModalStyle {
+  line-height: 3;
+}
+
+.fullWidth100p {
+  width: 100%;
+}

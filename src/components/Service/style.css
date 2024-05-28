@@ -1,0 +1,32 @@
+.services_row {
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.cw {
+  color: white;
+}
+.services_edit {
+  color: green;
+  cursor: pointer;
+}
+.services_delete {
+  color: red;
+  cursor: pointer;
+}  
+.service_create {
+  min-width: 100px;
+  margin-left: 5px;
+}
+.service_close-edit {
+  display: flex;
+  justify-content: end;
+  margin-top: 15px;
+}
+.service_update {
+  min-width: 100px;
+  margin-left: 5px;
+}
+.services_close {
+  justify-content: flex-end;
+  display: flex;
+}

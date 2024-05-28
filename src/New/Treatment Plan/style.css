@@ -1,0 +1,77 @@
+.link-text {
+    color: #6B43B5;
+}
+
+.notice-text-treatment-plan {
+    font-size: 14px;
+    margin-left: 15px 0px;
+}
+
+.treatment-title {
+    font-weight: 500px;
+    font-size: 20px;
+}
+
+.request-appointment-btn {
+    background-color: #6B43B5;
+    color: white;
+    min-width: 218px;
+    min-height: 34px;
+    text-align: center;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 400px;
+}
+
+.request-appointment-btn:hover {
+    color: white;
+}
+
+.text-on-tooths {
+    font-weight: 500;
+    font-size: 30px;
+    position: absolute;
+    top: 230px;
+    left: 166px;
+}
+
+.text-on-tooths2 {
+    font-weight: 500;
+    font-size: 30px;
+    position: absolute;
+    top: 80px;
+    left: 155px;
+}
+
+.inner-border-new-cards {
+    border: 1px solid #f0f0f0f0;
+    margin: 10px;
+    border-radius: 8px;
+}
+
+.downloadIconContainer {
+    border-radius: 50%;
+    background-color: #6B43B5;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.imageFileContainer {
+    position: relative;
+}
+
+.card-in-modal {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    width: 612px;
+}
+
+.insideCardModal {
+    padding: 20px;
+}
+
+.doctor-font {
+    font-size: 16px;
+    font-weight: 600 !important;
+}

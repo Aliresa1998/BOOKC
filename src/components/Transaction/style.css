@@ -1,0 +1,25 @@
+.transaction_mw250 {
+  min-width: 250px;
+} 
+
+.flex_end {
+  margin-left: 25px;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex;
+}
+
+.transaction_lh35 {
+  line-height: 35px;
+}
+
+.transaction_tag {
+  margin-right: 0px;
+  margin-left: 2px;
+}
+
+.transaction_reason {
+  text-align: end;
+  max-width: 320px;
+  margin-left: 15px;
+}

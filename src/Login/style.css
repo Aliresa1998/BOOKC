@@ -1,0 +1,255 @@
+.login-container {
+    min-height: 100vh;
+}
+
+.sider-cover-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    object-fit: cover;
+
+}
+
+.login-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 80vh;
+    justify-content: center;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-top: 10%;
+    margin-bottom: 5%;
+}
+
+.login-title {
+    font-weight: 500;
+    font-size: 24px;
+}
+
+.login-subtitle {
+    color: #6B43B5;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.input-lable {
+    color: #5D3B9C;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.login-button {
+    padding: 9px 16px;
+    background: #6B43B5;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+    border-radius: 20px;
+    height: 40px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #FFFFFF;
+    width: 100%;
+}
+
+.forgotpass-text {
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #6B43B5;
+    margin-top: 10px;
+}
+
+.modal-titr {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.modal-sub-titr {
+    font-weight: 400;
+    font-size: 14px;
+    color: #8C8C8C;
+
+}
+
+.done-button {
+    background: #6B43B5;
+    box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+    border-radius: 20px;
+    height: 40px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #FFFFFF;
+    width: 100%;
+}
+
+.recive-sms-title {
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.recive-sms-text {
+    color: #9176DC;
+    font-weight: 400;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.question-multiple-office {
+    color: #6B43B5;
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 10%;
+}
+
+.ant-input-search-address {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 4px 11px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+    line-height: 1.5714285714285714;
+    list-style: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    min-width: 0;
+    background-color: #ffffff;
+    background-image: none;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #d9d9d9;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.box-onboarding-text {
+    background: rgba(223, 218, 255, 0.7);
+    /* supplement/Triantry */
+    border: 2px solid #BFB6FF;
+    border-radius: 8px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 40px;
+    text-align: center;
+    color: #848696;
+    padding: 30px 50px;
+
+}
+
+.skip-btn {
+    display: flex;
+    justify-content: center;
+    text-decoration: underline;
+    color: #6B43B5;
+    cursor: pointer;
+}
+
+.card-box-text-title-onboarding {
+    margin-left: 15px;
+    font-weight: 400;
+    font-size: 16px;
+    color: #6B43B5;
+}
+
+
+.custom-table-container {
+    position: relative;
+}
+
+.custom-table {
+    background: rgba(223, 218, 255, 0.8);
+    border-radius: 8px;
+}
+
+.add-message {
+    color: #5d3b9c;
+    margin-top: 8px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.card-subscription-onboarding {
+    border-radius: 8px;
+    background-color: #E0DDF7;
+    border: 1px solid #E0DDF7;
+    width: 80%;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.card-subscription-onboarding-white {
+    border-radius: 8px;
+    border: 1px solid #E0DDF7;
+    width: 80%;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.trash-action-icon {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.subscription-badge {
+    background-color: #D7FFD6;
+    color: #23D020;
+    border-radius: 8px;
+    padding: 1px;
+}
+
+.line-result {
+    border: 1px solid hsl(247, 100%, 86%);
+    width: 100%;
+    margin: 25px 0px 15px 0px;
+}
+
+.dragDroptext {
+    color: #777;
+}
+
+.dragDropBtn {
+    color: #6B43B5;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.drop-zone {
+    border: 2px dashed #6B43B5;
+    /* Set your desired border color */
+    background-color: #f2f2f2;
+    /* Set your desired background color */
+    padding: 20px;
+}
+
+.ant-form-item-required::before {
+    content: "" !important;
+}
+
+td:has(.lastAntdTableColumn) {
+    background-color: white;
+}
+
+.card-pms {
+    border: 1px solid #E0DDF7;
+    border-radius: 8px;
+    margin: 10px 0px;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.selected-card-pms{
+    border: 1px solid #E0DDF7;
+    border-radius: 8px;
+    margin: 10px 0px;
+    padding: 15px;
+    cursor: pointer;
+    background-color: #E0DDF7;
+}
