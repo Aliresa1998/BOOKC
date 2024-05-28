@@ -7,12 +7,20 @@ import {
   Table,
   Card,
   Col,
+  Tag,
+  Typography,
+  Space,
+  Button
 } from "antd";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { controller } from "../../controller";
+import { Paymentcontroller } from "../../Paymentcontroller";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 
+import eye from '../../assets/icons/eye.png';
+
+const { Title } = Typography
 const { Search } = Input;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -57,11 +65,50 @@ const FailedPaymentColumn = [
   {
     title: "Subscription Transaction",
     dataIndex: "subscription_transaction",
-    render: (text, record) => (
-      <a style={record.seen ? {} : { fontWeight: "bold" }}>{text + ""}</a>
+    render: (subscription) => (
+      <Tag
+        color={subscription === "Undefined" ? "#E9E6FF" : "volcano"}
+        style={{ borderRadius: "20px", color: "#6B43B5", width: 113, textAlign: 'center', border: '1px solid #6B43B5' }}
+      >
+        {subscription}
+      </Tag>
+    ),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (_, record) => (
+      <span>
+        <Space size="middle">
+          <Button
+            type="text"
+            icon={<img src={eye} alt="" />}
+            style={{ color: "#979797" }}
+          />
+        </Space>
+      </span>
     ),
   },
 ];
+
+const data = [
+  {
+    key: 1,
+    payment_type: "Payment Plan",
+    created_at: "2023/12/12 , 05:23:30",
+    paid: 'False',
+    canceled: 'False',
+    subscription_transaction: "Undefined",
+  },
+  {
+    key: 2,
+    payment_type: "Payment Plan",
+    created_at: "2023/12/12 , 05:23:30",
+    paid: 'False',
+    canceled: 'False',
+    subscription_transaction: "Undefined",
+  }
+]
 
 class FailedPayments extends Component {
   openNotification = (placement, message, status) => {
@@ -94,6 +141,8 @@ class FailedPayments extends Component {
       currentPage: 1,
       page_size: 1,
       page: 1,
+      loading: true,
+      payment_data: {},
     };
 
     this.getData();
@@ -116,6 +165,8 @@ class FailedPayments extends Component {
       failedPayments: data,
     });
   };
+
+ 
 
   handlePageChange = async (page) => {
     this.setState({
@@ -148,37 +199,38 @@ class FailedPayments extends Component {
         logo={profileSummary && profileSummary.logo ? profileSummary.logo : ""}
         footerLogo={true}
       >
+        <Title level={4} style={{ marginTop: 50, marginBottom: 30, marginLeft: 32 }}>Failed Payments</Title>
         <Row>
           <Col span={24}>
-            <Card>
-              <p className="editprofile">Failed Payments</p>
 
-              <div className="payreq-container" style={{ paddingTop: "10px" }}>
-                <Row
-                  type="flex"
-                  justify="space-between"
+
+            <div className="payreq-container" style={{ paddingTop: "10px", width: '95%', marginLeft: 32 }}>
+              <Row
+                type="flex"
+                justify="space-between"
+                style={{ width: "100%" }}
+              >
+                <Table
                   style={{ width: "100%" }}
-                >
-                  <Table
-                    style={{ width: "100%" }}
-                    columns={FailedPaymentColumn}
-                    dataSource={this.state.failedPayments}
-                    pagination={false}
-                  />
-                </Row>
-                <Row type="flex" justify="end" className="mt15">
-                  <Pagination
-                    showSizeChanger={false}
-                    hideOnSinglePage={true}
-                    current={this.state.currentPage}
-                    total={this.state.page_size}
-                    onChange={this.handlePageChange}
-                    className="paginator"
-                    size="small"
-                  />
-                </Row>
-              </div>
-            </Card>
+                  columns={FailedPaymentColumn}
+                  dataSource={this.state.failedPayments}
+                  // dataSource={data}
+                  pagination={false}
+                />
+              </Row>
+              <Row type="flex" justify="end" className="mt15">
+                <Pagination
+                  showSizeChanger={false}
+                  hideOnSinglePage={true}
+                  current={this.state.currentPage}
+                  total={this.state.page_size}
+                  onChange={this.handlePageChange}
+                  className="paginator"
+                  size="small"
+                />
+              </Row>
+            </div>
+            {/* </Card> */}
           </Col>
         </Row>
       </DashboardLayout>

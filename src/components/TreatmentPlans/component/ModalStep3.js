@@ -94,7 +94,7 @@ const ModalStep3 = ({ selectedMember, isModalVisible, setIsModalVisible, handleS
                             rows={4}
                             value={treatmentDescription}
                             onChange={(e) => setTreatmentDescription(e.target.value)}
-                            placeholder="Enter Treatment Description"
+                            placeholder="Enter Treatment Name"
                         />
 
                     </div>
@@ -108,7 +108,7 @@ const ModalStep3 = ({ selectedMember, isModalVisible, setIsModalVisible, handleS
                             rows={4}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            placeholder="Write Note for Treatment..." />
+                            placeholder="Write Description for Treatment..." />
                     </div>
                     <div className="div-margin-bottom" >
                         <div className="div-margin-bottom-text">

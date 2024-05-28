@@ -1,45 +1,12 @@
-// import React from 'react';
-// import Chart from 'react-apexcharts';
-
-// const BarChart = () => {
-//   const options = {
-//     chart: {
-//       id: 'bar-chart'
-//     },
-//     xaxis: {
-//       categories: ['Scaling', 'Root Planing', 'Fluoride Gel', 'Scaling']
-//     },
-//     title: {
-//       text: 'Most Common Preventive Treatments',
-//       align: 'center'
-//     },
-//     plotOptions: {
-//       bar: {
-//         borderRadius: 4,
-//         horizontal: false,
-//       }
-//     }
-//   };
-
-//   const series = [{
-//     name: 'Number of Treatments',
-//     data:[8, 3, 5, 8] // Replace these values with your actual data
-//   }];
-
-//   return (
-//     <div className="bar-chart">
-//       <Chart options={options} series={series} type="bar" width="380" />
-//     </div>
-//   );
-// };
-
-// export default BarChart;
-
 
 import React from 'react';
-import ReactApexChart from 'react-apexcharts';
-const BarChart = ({chartdata, categories, rotate}) => {
- 
+import Chart from 'react-apexcharts';
+
+const BarChart = ({ chartdata = [], categories = [], rotate, height }) => {
+  if (!chartdata || !categories || chartdata.length === 0 || categories.length === 0) {
+    return <div>No data available for the chart</div>;
+  }
+
   const options = {
     chart: {
       type: 'bar',
@@ -55,13 +22,9 @@ const BarChart = ({chartdata, categories, rotate}) => {
           show: false
         }
       },
-      // padding: {
-      //   right: 30
-      // }
     },
     axisTicks: {
       show: false,
-
     },
     axisBorder: {
       show: false,
@@ -74,15 +37,15 @@ const BarChart = ({chartdata, categories, rotate}) => {
         rotateAlways: true,
         offsetX: 5,
         offsetY: 15,
+        style: {
+          fontSize: '13px',  // Adjust this value as needed
+        },
       },
       axisBorder: {
         show: false
       },
     },
-    // title: {
-    //   text: 'Most Common Preventive Treatments',
-    //   align: 'center'
-    // },
+    
     plotOptions: {
       bar: {
         horizontal: false,
@@ -90,18 +53,15 @@ const BarChart = ({chartdata, categories, rotate}) => {
         borderRadiusWhenStacked: 'last',
         columnWidth: 10,
         borderRadius: 4,
-
       }
     },
     colors: ['#6B43B5'],
     dataLabels: {
       enabled: false,
     },
-
     stroke: {
       width: 0
     },
-
     yaxis: {
       show: true
     },
@@ -125,7 +85,7 @@ const BarChart = ({chartdata, categories, rotate}) => {
 
   return (
     <div id="chart">
-      <ReactApexChart options={options} series={chartdata} type="bar" height={300} />
+      <Chart options={options} series={[{ data: chartdata }]} type="bar" height={height} />
     </div>
   );
 };

@@ -1,25 +1,30 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import ReactApexChart from 'react-apexcharts';
 
 const defaultColorLogic = (percentage) => {
-  if (percentage > 70) {
+  if (percentage * 10 > 70) {
     return '#23D020';
-  } else if (percentage > 50) {
+  } else if (percentage * 10 > 50) {
     return '#FFDD00';
-  } else {
+  } else if (percentage * 10 < 50) {
     return '#FF6347';
   }
 };
 
 const DonutChart = ({
-  fillPercentage = 30,
-  Value = 20,
-  label = 'Oral Health Score',
-  width = '350px',
+  fillPercentage ,
+  Value ,
+  label ,
+  width ,
   colorLogic = defaultColorLogic
 }) => {
   const filledColor = colorLogic(fillPercentage);
-  const seriesData = [fillPercentage, 100 - fillPercentage];
+  const seriesData = [fillPercentage * 10, 100 - fillPercentage * 10];
+
+  useEffect(() => {
+    console.log('aaa')
+    console.log(fillPercentage)
+}, []);
 
 
   const options = {
@@ -49,10 +54,10 @@ const DonutChart = ({
             },
             value: {
               show: true,
-              fontSize: '36px',
+              fontSize: '42px',
               label: label,
               fontFamily: 'Helvetica, Arial, sans-serif',
-              fontWeight: 500,
+              fontWeight: 600,
               color: '#4D3280',
 
               offsetY: -20,
@@ -64,7 +69,7 @@ const DonutChart = ({
               show: true,
               showAlways: false,
               label: label,
-              fontSize: '12px',
+              fontSize: '14px',
               fontWeight: 400,
               color: '#979797',
               formatter: function () {
@@ -92,7 +97,7 @@ const DonutChart = ({
 
   return (
     <div id={`chart-${label.replace(/\s+/g, '-')}`}>
-        <ReactApexChart options={options} series={seriesData} type="donut" width={width} />
+        <ReactApexChart options={options} series={seriesData} type="donut" width={width} height={333} />
       </div>
   );
 };

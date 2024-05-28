@@ -1,14 +1,18 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const MembershipChart = () => {
+const MembershipChart = ({ series = [], labels = [] }) => {
+  if (!Array.isArray(series) || series.length === 0 || !Array.isArray(labels) || labels.length === 0) {
+    return <div>No data available for the chart</div>;
+  }
+
   const chartOptions = {
     chart: {
       type: 'donut',
     },
-    labels: ['Membership Plan', 'Membership Plan', 'Membership Plan', 'Membership Plan'],
+    labels: labels,
     legend: {
-      show: false, // Hide the legend if you wish
+      show: false, 
     },
     tooltip: {
       y: {
@@ -20,7 +24,7 @@ const MembershipChart = () => {
     plotOptions: {
       pie: {
         donut: {
-          size: '85%', // Adjust donut size as needed
+          size: '85%', 
           labels: {
             show: true,
             name: {
@@ -38,9 +42,7 @@ const MembershipChart = () => {
               fontWeight: 400,
               color: undefined,
               offsetY: 16,
-            //   formatter: function (val) {
-            //     return val + "";
-            //   }
+          
             },
             total: {
               show: true,
@@ -76,11 +78,10 @@ const MembershipChart = () => {
     }]
   };
 
-  const series = [50,24,14,12]; // The series value is 24%
 
   return (
     <div>
-      <Chart options={chartOptions} series={series} type="donut" height={335} />
+      <Chart options={chartOptions} series={series} type="donut" height={333} />
     </div>
   );
 };

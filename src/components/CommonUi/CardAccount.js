@@ -334,8 +334,11 @@ export default function CardAccount({ isExpress, data, onActiveCard }) {
           data.is_default
             ? {
                 marginBottom: "6px",
-                backgroundImage:
-                  "linear-gradient(315deg, rgb(246, 246, 246), rgb(213, 181, 255) 150%)",
+                background:
+                  "#EEEDFA",
+                  border: 'none',
+                  width: 395,
+                  height: 156
               }
             : { marginBottom: "6px" }
         }
@@ -344,19 +347,19 @@ export default function CardAccount({ isExpress, data, onActiveCard }) {
         <div className="commonui_w100">
           <div className="commonui_description">
             <div>
-              <p className="cardHead cardHeadLeft">
+              <p className="cardHeadLeft" style={{color: '#979797'}}>
                 Funding Source
                 <br />
-                <span className="cardContext">
+                <span style={{color: '#6B43B5', fontSize: 16}}>
                   {data.fundingsource_name ? data.fundingsource_name : "-"}
                 </span>
               </p>
             </div>
             <div>
-              <p className="cardHead cardHeadRight">
+              <p className="cardHeadRight"  style={{color: '#979797'}}>
                 Bank
                 <br />
-                <span className="cardContext">
+                <span style={{color: '#6B43B5', fontSize: 16}}>
                   {data.bank_name ? data.bank_name : "-"}
                 </span>
               </p>
@@ -364,20 +367,20 @@ export default function CardAccount({ isExpress, data, onActiveCard }) {
           </div>
           <div className="commonui_description">
             <div>
-              <p className="cardHead cardHeadLeft">
+              <p className="cardHeadLeft"  style={{color: '#979797'}}>
                 Funding ID
                 <br />
-                <span className="cardContext">
+                <span style={{color: '#6B43B5', fontSize: 16}}>
                   {data.funding_id ? data.funding_id : "-"}
                 </span>
               </p>
             </div>
           </div>
           <div className="commonui_description">
-            <p className="cardHead cardHeadLeft">
+            <p className=" cardHeadLeft"  style={{color: '#979797'}}>
               Created
               <br />
-              <span className="cardContext">
+              <span style={{color: '#6B43B5', fontSize: 16}}>
                 {data.created
                   ? new Date(data.created).toLocaleDateString() +
                     " " +

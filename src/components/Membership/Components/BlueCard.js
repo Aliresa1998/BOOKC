@@ -9,7 +9,7 @@ const BlueCard = ({ name, value, icon }) => {
                 <div className='circle'>
                     <img className='icon-center' src={icon} alt=''/>    
                 </div>
-                <div>
+                <div style={{marginLeft: 10}}>
                     <div className='blueCardMainName'>{name}</div>
                     <div className='blueCardMainValue'>{value}</div>
                 </div>

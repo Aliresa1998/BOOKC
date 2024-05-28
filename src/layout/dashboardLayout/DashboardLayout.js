@@ -25,13 +25,13 @@ const DashboardLayout = ({ children, breadCrumb, logo, footerLogo }) => {
           <Sidebar />
           <Layout>
             <TopBar clinicLogo={logo ? logo : ""} />
-            {breadCrumb ? (
+            {/* {breadCrumb ? (
               <div className="page-breadcrumb">
                 <span className="breadcrumb-part">{breadCrumb}</span>
               </div>
             ) : (
               ""
-            )}
+            )} */}
             {children}
             {footerLogoData ? (
               <>

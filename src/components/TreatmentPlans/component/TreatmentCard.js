@@ -22,6 +22,7 @@ import trash from '../../../assets/icons/trash2.png'
 import export1 from '../../../assets/icons/export.png'
 import up2 from '../../../assets/icons/Polygon 1.png';
 import down2 from '../../../assets/icons/Polygon 2.png';
+import delete1 from '../../../assets/icons/trash.png';
 
 
 import "../style.css";
@@ -217,12 +218,30 @@ const TreatmentCard = (props) => {
 
     };
 
+    const handleDelete = async (record) => {
+        try {
+            // Perform deletion operation on the server
+            await controller.RemoveTreatmentPlans(record.key);
+            // Remove the deleted record from the table
+            const updatedTableData = tableData.filter(row => row.key !== record.key);
+            setTableData(updatedTableData);
+            // Optionally, you can show a success notification
+            // notification.success({
+            //     message: 'Success',
+            //     description: 'Treatment plan deleted successfully.',
+            //     placement: 'bottomRight',
+            // });
+        } catch (error) {
+            console.error("Error deleting treatment plan:", error);
+        }
+    };
     const renderEditCell = (record) => {
         const isEditing = edit[record.key];
         return (
             <span>
                 {isEditing ? (
                     <Input.TextArea
+                        style={{border: "1px solid #C9C1F1"}}
                         value={record.notes}
                         onChange={(e) => handleNoteChange(e, record)}
                         autoSize={{ minRows: 2, maxRows: 6 }}
@@ -368,12 +387,18 @@ const TreatmentCard = (props) => {
             ),
         },
         {
-            title: "Edit",
-            key: "edit",
-            width: '10%',
+            title: "Action",
+            key: "action",
+            width: '5%',
             render: (_, record) => (
                 <span>
                     <Space size="middle">
+                        <Button
+                            type="text"
+                            icon={<img src={delete1} alt="" />}
+                            style={{ color: "#979797" }}
+                            onClick={() => handleDelete(record)}
+                        />
                         {edit[record.key] ? (
                             <Button
                                 type="text"
@@ -517,7 +542,7 @@ const TreatmentCard = (props) => {
                                                         disabled={!imageFile}
                                                         icon={<img src={trash} alt="" />}
                                                     >
-                                                        <span className="size-14-gray"> Remove </span>
+                                                        <span className="size-14-gray1"> Remove </span>
                                                     </Button>
                                                     <Upload {...props1}>
                                                         <Button
@@ -547,7 +572,7 @@ const TreatmentCard = (props) => {
                                                         type="text"
                                                         onClick={handleRemove}
                                                         disabled={true}
-                                                        icon={<img src={trash} alt="" />}
+                                                        icon={<img src={delete1} alt="" />}
                                                     >
                                                         <span className="size-14-gray"> Remove </span>
                                                     </Button>
@@ -571,10 +596,11 @@ const TreatmentCard = (props) => {
                             >
                                 {currentStep === 1 && (
                                     <Button
-                                        className="render-btn1"
+                                        // className="render-btn1"
                                         type="default"
                                         onClick={prevStep}
                                         disabled
+                                        style={{ color: '#D9D9D9', border: 'none', width:116, height: 34 }}
                                     >
                                         Back
                                     </Button>

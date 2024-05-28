@@ -802,8 +802,113 @@ const GetMembershipHistory = async (id) => {
     return res;
 }
 
+const getTreatmentPlans = async (page) => {
+    const myHeaders = Object.assign(
+        { "Content-Type": "application/json" },
+        authHeader()
+    );
 
-export const Controller = {
+    const req = new Request(
+        config.apiGateway.URL + "/clinics/list-treatmentplan-by-patient/?page=" + page + "&office_id=" + localStorage.getItem("selectedOffice"),
+        {
+            method: "GET",
+            headers: myHeaders,
+        }
+
+    );
+    const response = await fetch(req);
+    const json = await response.json();
+    const res = {
+        json: json,
+        status: response.status,
+        message: response.message,
+    };
+
+    return res;
+};
+
+const getScore = async (page) => {
+    const myHeaders = Object.assign(
+        { "Content-Type": "application/json" },
+        authHeader()
+    );
+
+    const req = new Request(
+        config.apiGateway.URL + "/clinics/treatment-plan-score/?page=" + page + "&office_id=" + localStorage.getItem("selectedOffice"),
+        {
+            method: "GET",
+            headers: myHeaders,
+        }
+
+    );
+    const response = await fetch(req);
+    const json = await response.json();
+    const res = {
+        json: json,
+        status: response.status,
+        message: response.message,
+    };
+
+    return res;
+};
+
+const getBarTreatment = async () => {
+    const myHeaders = Object.assign(
+        { "Content-Type": "application/json" },
+        authHeader()
+    );
+
+    const req = new Request(
+        config.apiGateway.URL + "/clinics/top-treatment-plans/?office_id=" + localStorage.getItem("selectedOffice"),
+        {
+            method: "GET",
+            headers: myHeaders,
+        }
+
+    );
+    const response = await fetch(req);
+    const json = await response.json();
+    const res = {
+        json: json,
+        status: response.status,
+        message: response.message,
+    };
+
+    return res;
+};
+
+
+const getImpact = async (page) => {
+    const myHeaders = Object.assign(
+        { "Content-Type": "application/json" },
+        authHeader()
+    );
+
+    const req = new Request(
+        config.apiGateway.URL + "/clinics/preventive-treatment-impact/?page=" + page + "&office_id=" + localStorage.getItem("selectedOffice"),
+        {
+            method: "GET",
+            headers: myHeaders,
+        }
+
+    );
+    const response = await fetch(req);
+    const json = await response.json();
+    const res = {
+        json: json,
+        status: response.status,
+        message: response.message,
+    };
+
+    return res;
+};
+
+
+export  const Controller = {
+    getImpact,
+    getBarTreatment,
+    getScore,
+    getTreatmentPlans,
     TotalMembers,
     GetCustomers,
     GetCustomersSearch,

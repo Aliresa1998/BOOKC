@@ -227,12 +227,14 @@ function TreatmentPlans() {
             ) : (
               data.map((item) => (
                 <div className="mb" key={item._id}>
+                <div className="mb" key={item._id}>
                   <TreatmentCard
                     updateData={updateData}
                     updateDataUpdatePriority={updateDataUpdatePriority}
                     data={item}
                     postNoteAndImage={handlePostNoteAndImage}
                   />
+                  </div>
                 </div>
               ))
             )}

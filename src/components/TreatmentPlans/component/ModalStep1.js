@@ -39,9 +39,7 @@ function ModalStep1({ item, handleMemberSelect }) {
   return (
     <div className="modal2-form">
       <div className="modal-step1">
-        <Title className="modal1-title" level={5}>
-          Select Patient
-        </Title>
+        
         <Form.Item className="modal1-form1" name="treatment">
           <Text className="modal1-text1">Select Patient</Text>
           <Select
