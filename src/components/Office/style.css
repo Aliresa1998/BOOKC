@@ -11,7 +11,7 @@
 
 .profile_upload {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   flex-direction: column;
 }
 
@@ -20,11 +20,15 @@
 }
 
 .profile_upload-img {
-  width: 110px;
-  height: 110px;
-  border-radius: 55px;
+  position: relative;
+  width: 148px;
+  height: 148px;
+  border-radius: 95px;
   cursor: pointer;
   transition: opacity 0.3s;
+  /* border: 4px solid rgba(201, 193, 241, 1); */
+  top: -73px !important;
+  left: 46px;
 }
 
 .input_profile {
@@ -93,4 +97,47 @@
   overflow-y:  auto;
   border:  none;
   border-radius:  8px;
+}
+
+/* Targeting the stars within the Rate component */
+.custom-rate .ant-rate-star {
+  margin-right: 47px; /* Decrease the distance between stars */
+}
+
+.custom-rate .ant-rate-star .ant-rate-star-full,
+.custom-rate .ant-rate-star .ant-rate-star-zero {
+  border-radius: 100px; /* Rounded corners for stars */
+}
+
+.custom-upload-list {
+  display: flex;
+  width: 143px;
+  height: 96px;
+  margin-right: 10px; 
+  overflow: hidden;
+}
+
+ .ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item {
+  width: 143px !important; 
+  height: 96px !important;
+  margin-right: 10px !important;
+}
+
+.ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container {
+  width: 50 !important;
+}
+
+.ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container {
+  width: 148px !important;
+}
+
+.ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload.ant-upload-select {
+  width: 143px !important;
+  height: 96px !important;
+  border-width: 2px;
+  background: white !important;
+}
+
+.line-14{
+  margin-bottom: 50px;
 }

@@ -90,19 +90,31 @@ const get_priceproductOld = async (data) => {
   return json;
 };
 
-const get_priceproduct = async (data) => {
-  const myHeaders = Object.assign({ 'Content-Type': 'application/json' })
-  const req = new Request(config.apiGateway.URL + '/billpay/price-product-2/?payment_request_id=' + data + '&interval_id=' + localStorage.getItem("wizard_recurring_interval_count"), {
+const get_priceproduct = async (paymentRequestId, intervalId) => {
+  const myHeaders = new Headers({ 'Content-Type': 'application/json' });
+  const queryParameters = new URLSearchParams({
+    payment_request_id: paymentRequestId,
+    interval_id: intervalId || ''  // Ensure it falls back to an empty string if null
+  }).toString();
+
+  const url = `${config.apiGateway.URL}/billpay/price-product-2/?${queryParameters}`;
+  const req = new Request(url, {
     method: 'GET',
     headers: myHeaders,
   });
 
-  const response = await fetch(req);
-  const json = await response.json();
-  json.status = response.status;
-  statusHandeling.statusCodeHandeling(response.status)
-  return json;
+  try {
+    const response = await fetch(req);
+    const json = await response.json();
+    json.status = response.status;
+    statusHandeling.statusCodeHandeling(response.status);
+    return json;
+  } catch (error) {
+    console.error("Failed to fetch price product:", error);
+    throw error;  // Re-throw the error if you need to handle it in the calling component
+  }
 };
+
 
 const get_payment_data = async (data) => {
   const myHeaders = Object.assign({ 'Content-Type': 'application/json' })
@@ -203,9 +215,9 @@ const helcimPayMulti = async (
 ) => {
   const myHeaders = Object.assign({ 'Content-Type': 'application/json' })
   var payload = {
+    'payment_request_id': id,
     'payment_method_token': cardtoken ? cardtoken : "",
     'ip-address': ip,
-    'payment_request_id': id,
     "helcimResponse": window.location.href
   }
 
@@ -266,29 +278,73 @@ const paySinglePayment = async (
   return json;
 };
 
-const createInstallment = async (
-  interval_count,
-  payment_request
-) => {
-  const myHeaders = Object.assign({ 'Content-Type': 'application/json' })
+const createInstallment = async (interval_count, payment_request) => {
+  // Convert interval_count to an integer to ensure proper type handling
+  const intervalCount = parseInt(interval_count, 10);
+  if (isNaN(intervalCount)) {
+      console.error('Interval count must be a valid number');
+      return { error: "Interval count must be a valid number" };
+  }
 
-  const raw = JSON.stringify({
-    "interval_count": interval_count,
-    "payment_request": payment_request,
-  })
-
-  const req = new Request(config.apiGateway.URL + '/billpay/create-installment/', {
-    body: raw,
-    method: 'POST',
-    headers: myHeaders,
+  const myHeaders = new Headers({
+      "Content-Type": "application/json"
   });
 
-  const response = await fetch(req);
-  const json = await response.json();
-  json.status = response.status;
-  statusHandeling.statusCodeHandeling(response.status)
-  return json;
+  // Construct the body using an object and stringify it in the fetch call
+  const requestBody = {
+      payment_request: payment_request
+  };
+  requestBody.interval_count = intervalCount;
+
+  try {
+      const response = await fetch(config.apiGateway.URL + '/billpay/create-installment/', {
+          method: "POST",
+          headers: myHeaders,
+          body: JSON.stringify(requestBody) // Stringify the requestBody here for clarity and to align with common practices
+      });
+      const json = await response.json();
+      json.status = response.status; // Attach status to json for uniform error handling
+      statusHandeling.statusCodeHandeling(response.status);
+      return json;
+  } catch (error) {
+      console.error('Error creating installment:', error);
+      return { error: error.message };
+  }
 };
+
+
+const createTreatmentPlans = async (data) => {
+    const { name, patient, description, priority, procedure } = data
+    const myHeaders = {
+        "Content-Type": "application/json",
+        ...authHeader()
+    };
+
+    const stringifiedFields = JSON.stringify({
+        name,
+        patient,
+        description,
+        priority,
+    });
+
+    const requestBody = JSON.parse(stringifiedFields);
+    requestBody.procedure = procedure;
+
+    const response = await fetch(config.apiGateway.URL + "/clinics/create-treatmentplan/?office_id=" + localStorage.getItem("selectedOffice"), {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(requestBody)
+    });
+    const json = await response.json();
+    return {
+        json: json,
+        status: response.status,
+        message: "Success"
+    };
+
+};
+
+
 
 const send_clinics_subscription = async (
   customer,

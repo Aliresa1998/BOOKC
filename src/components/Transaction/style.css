@@ -1,5 +1,8 @@
 .transaction_mw250 {
-  min-width: 250px;
+  width: 206px;
+  height: 34px;
+  border-radius: 30px;
+  border: 1px solid rgba(107, 67, 181, 1)
 } 
 
 .flex_end {
@@ -22,4 +25,9 @@
   text-align: end;
   max-width: 320px;
   margin-left: 15px;
+}
+
+.centerTble-action th.column-action {
+  text-align: center !important;
+  margin-left: 20px !important;
 }

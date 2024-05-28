@@ -26,6 +26,8 @@ import data from "../assets/icons/data.png";
 import office from "../assets/icons/office.png";
 import setting from "../assets/icons/ticket20.png";
 import logoSmall from "../assets/img/logo-collapsed.png"
+import ticket from '../assets/icons/ticket.png'
+import market from '../assets/icons/market.png'
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
@@ -249,34 +251,33 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
           >
             {/* <DashboardOutlined className="menuIcon" /> */}
             <img src={dashboard} alt="" className="Icon" />
-            <span>{collapsed ? "" : "Dashboard"}</span>
+            <span style={{ fontSize: 18 }} >{collapsed ? "" : "Dashboard"}</span>
           </Menu.Item>
           <SubMenu
             key="treatmentSub"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={treatmentPlan} alt="" className="Icon" />
-                <span>{collapsed ? "" : "Treatment Plans"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Treatment Plans"}</span>
               </span>
             }
           >
             <Menu.Item
               className="sidebar_menuitem"
               key="treatment-plans"
-              style={{marginBottom:"0px"}}
               onClick={() => dispatch(push(`/treatment-plans`))}
             >
-              <span>{collapsed ? "" : "New Plans"}</span>
+              <span >{collapsed ? "" : "New Plans"}</span>
             </Menu.Item>
           </SubMenu>
           {/* <SubMenu
             key="sub1"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={member} alt="" className="Icon" />
-                <span>{collapsed ? "" : "Membership"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Membership"}</span>
               </span>
             }
           >
@@ -312,19 +313,19 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               className="sidebar_menuitem"
               key="80"
               onClick={() => dispatch(push(`/visit`))}
-              style={{marginBottom:"0px"}}
+              style={{ marginBottom: "0px" }}
             >
               <span>Visits</span>
             </Menu.Item>
-          </SubMenu> */}
+          </SubMenu>*/}
 
           <SubMenu
             key="sub2"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={payment} alt="" className="Icon" />
-                <span>{collapsed ? "" : "Payments"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Payments"}</span>
               </span>
             }
           >
@@ -347,7 +348,7 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               key="141"
               onClick={() => dispatch(push(`/transactions`))}
             >
-              <span>Processed</span>
+              <span >Processed</span>
               <Badge
                 count={count.t_count ? count.t_count : 0}
                 className="ml10"
@@ -357,7 +358,7 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
             <Menu.Item
               className="sidebar_menuitem w102p"
               key="142"
-              style={{marginBottom:"0px"}}
+              style={{ marginBottom: "0px" }}
               onClick={() => dispatch(push(`/failed-payments`))}
             >
               <span>Failed</span>
@@ -368,13 +369,14 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               />
             </Menu.Item>
           </SubMenu>
+
           <SubMenu
             key="sub3"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={appointment} alt="" className="Icon" />
-                <span>{collapsed ? "" : "Appointments"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Appointments"}</span>
               </span>
             }
           >
@@ -403,7 +405,7 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               className="sidebar_menuitem"
               key="143"
               onClick={() => dispatch(push(`/discount-options`))}
-              style={{marginBottom:"0px"}}
+              style={{ marginBottom: "0px" }}
             >
               <span>Discount Options</span>
             </Menu.Item>
@@ -413,9 +415,9 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
             key="sub5"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={office} alt="" className="Icon" />
-                <span>{collapsed ? "" : "My Office"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "My Office"}</span>
               </span>
             }
           >
@@ -444,7 +446,7 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               className="sidebar_menuitem"
               key="12"
               onClick={() => dispatch(push(`/office/review`))}
-              style={{marginBottom:"0px"}}
+              style={{ marginBottom: "0px" }}
             >
               <span> Check Reviews </span>
             </Menu.Item>
@@ -454,9 +456,9 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
               key="sub5-data"
               className="sidebar_submenu"
               title={
-                <span>
-                  <img src={data} alt="" className="Icon" />
-                  <span>{collapsed ? "" : "Data"}</span>
+                <span className="align-menu">
+                  <img src={ticket} alt="" className="Icon" />
+                  <span style={{ fontSize: 18 }}>{collapsed ? "" : "Data"}</span>
                 </span>
               }
             >
@@ -481,12 +483,31 @@ function Sidebar({ props, dispatch, reloadSidebar }) {
           )}
 
           <SubMenu
+            key="markettSub"
+            className="sidebar_submenu"
+            title={
+              <span className="align-menu">
+                <img src={market} alt="" className="Icon" />
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Marketing"}</span>
+              </span>
+            }
+          >
+            <Menu.Item
+              className="sidebar_menuitem"
+              key="treatment-plans"
+              onClick={() => dispatch(push(`/campaigns`))}
+            >
+              <span >{collapsed ? "" : "Campaigns"}</span>
+            </Menu.Item>
+          </SubMenu>
+
+          <SubMenu
             key="sub4"
             className="sidebar_submenu"
             title={
-              <span>
+              <span className="align-menu">
                 <img src={setting} alt="" className="Icon" />
-                <span>{collapsed ? "" : "Settings"}</span>
+                <span style={{ fontSize: 18 }}>{collapsed ? "" : "Settings"}</span>
               </span>
             }
           >

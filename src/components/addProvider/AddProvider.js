@@ -1,15 +1,21 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
-import { Select, Input, Radio } from "antd";
+import { Select, Input, Radio, Row, Col, Button, Card, Typography, Upload, message } from "antd";
 import { notification, DatePicker } from "antd";
 import { controller } from "../../controller";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout.js";
 import { Error } from "../../ErrorHandeling";
 import { UserOutlined, HomeOutlined, MailOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import '../addProvider/style.css';
+import export1 from '../../assets/icons/export1.png';
+import calendar from '../../assets/icons/calendar.png';
+import arrow from '../../assets/icons/arrow-left.png';
 
+const { Title } = Typography
 const { Option } = Select;
 const { Search } = Input;
+const { Dragger } = Upload
 
 class AddProvider extends Component {
   get_officeservices = async () => {
@@ -47,6 +53,10 @@ class AddProvider extends Component {
   };
   constructor(props) {
     super(props);
+
+    this.state = {
+      imageUrl: null,
+    };
 
     this.state = {
       serverLogo: "",
@@ -121,6 +131,20 @@ class AddProvider extends Component {
     const response = await controller.getLogo();
     this.setState({ serverLogo: response.data.dark });
   };
+
+  // handleUpload = info => {
+  //   const { status, response } = info.file;
+  //   if (status !== 'uploading') {
+  //     console.log(info.file, info.fileList);
+  //   }
+  //   if (status === 'done') {
+  //     message.success(`${info.file.name} file uploaded successfully.`);
+  //     // Assuming your server returns the URL of the uploaded image
+  //     this.setState({ imageUrl: response.imageUrl }); // Update imageUrl state with the uploaded image URL
+  //   } else if (status === 'error') {
+  //     message.error(`${info.file.name} file upload failed.`);
+  //   }
+  // };
 
   goToDashboard = () => {
     this.props.dispatch(push(`/dashboard`));
@@ -306,6 +330,8 @@ class AddProvider extends Component {
     this.setState({ sending_data: false });
   };
 
+
+
   handleChange(e) {
     let { name, value } = e.target;
 
@@ -349,6 +375,14 @@ class AddProvider extends Component {
 
   render() {
     const { creating, error, profileSummary } = this.props;
+    //   const props = {
+    //     name: 'file',
+    //     action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
+    //     headers: {
+    //         authorization: 'authorization-text',
+    //     },
+    //     onChange: this.handleUpload,
+    // };
 
     return (
       <DashboardLayout
@@ -356,15 +390,19 @@ class AddProvider extends Component {
         footerLogo={this.state.serverLogo}
         breadCrumb={"Create New Provider"}
       >
-        <div className="paymentRequestContent">
-          <div className="payreq-container">
-            <div className="content">
-              {this.state.submitted && !creating && error && error.message && (
-                <div className="alert">{error.message}</div>
-              )}
+        <Title level={3} className="title-provider">Add New Provider</Title>
 
-              <label className="formLabel">Provider Full-Name</label>
+        {/* <div className="paymentRequestContent">
+          <div className="payreq-container"> */}
+        <Card className="card-provider">
+          {this.state.submitted && !creating && error && error.message && (
+            <div className="alert">{error.message}</div>
+          )}
+          <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 40 }} >
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Provider Full-Name</label>
               <Input
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                 onChange={this.handleChange}
                 className={
                   this.state.formError &&
@@ -375,9 +413,9 @@ class AddProvider extends Component {
                 }
                 type="text"
                 name="provider_fullname"
-                placeholder=" provider name"
+                placeholder=" Enter Provider Full Name"
                 value={this.state.provider_fullname}
-                prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+                // prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
               />
               {this.state.formError &&
                 this.state.formError.FullName &&
@@ -388,9 +426,12 @@ class AddProvider extends Component {
                   {this.state.formError.FullName.massage}
                 </div>
               )}
-              <label className="formLabel">Provider Phone</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Provider Phone</label>
               <Input
                 onChange={this.handleChange}
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                 className={
                   this.state.formError &&
                     this.state.formError.Phone &&
@@ -400,9 +441,9 @@ class AddProvider extends Component {
                 }
                 type="text"
                 name="provider_phone"
-                placeholder="123 456 0789"
+                placeholder="Enter Provider Phone"
                 value={this.state.provider_phone}
-                prefix={"+1"}
+                // prefix={"+1"}
               />
               {this.state.formError &&
                 this.state.formError.Phone &&
@@ -413,59 +454,46 @@ class AddProvider extends Component {
                   {this.state.formError.Phone.massage}
                 </div>
               )}
-              <label className="formLabel">Provider Address</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Provider Email</label>
               <Input
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                 onChange={this.handleChange}
                 className={
                   this.state.formError &&
-                    this.state.formError.address_line1 &&
-                    this.state.formError.address_line1.status
+                    this.state.formError.Email &&
+                    this.state.formError.Email.status
                     ? ""
                     : "inputs-error"
                 }
-                type="text"
-                name="address_line1"
-                placeholder="581 wfi street"
-                value={this.state.address_line1}
-                prefix={<HomeOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+                name="provider_email"
+                type="email"
+                autoComplete="email"
+                placeholder="Enter Provider Email"
+                value={this.state.provider_email}
+                
               />
               {this.state.formError &&
-                this.state.formError.address_line1 &&
-                this.state.formError.address_line1.status ? (
+                this.state.formError.Email &&
+                this.state.formError.Email.status ? (
                 <></>
               ) : (
                 <div className="error-text">
-                  {this.state.formError.address_line1.massage}
+                  {this.state.formError.Email.massage}
                 </div>
               )}
-              <label className="formLabel">City</label>
-              <Input
-                onChange={this.handleChange}
-                className={
-                  this.state.formError &&
-                    this.state.formError.city &&
-                    this.state.formError.city.status
-                    ? ""
-                    : "inputs-error"
-                }
-                type="text"
-                name="city"
-                placeholder="London"
-                value={this.state.city}
-                prefix={<EnvironmentOutlined style={{ color: "rgba(0,0,0,.25)" }} />} />
-              {this.state.formError &&
-                this.state.formError.city &&
-                this.state.formError.city.status ? (
-                <></>
-              ) : (
-                <div className="error-text">
-                  {this.state.formError.city.massage}
-                </div>
-              )}
-              <label className="formLabel">Birth Date</label>
+            </Col>
+           
+          </Row>
+          <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 40 }} >
+          <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} > Provider Birth Date</label>
               <DatePicker
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                 name="birthdate"
                 placeholder="Choose date"
+                suffixIcon= {<img src={calendar} alt="" />}
                 className={
                   this.state.formError &&
                     this.state.formError.birthdate &&
@@ -488,36 +516,69 @@ class AddProvider extends Component {
                     : ""}
                 </div>
               )}
-
-              <label className="formLabel">Provider Email</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >City</label>
               <Input
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                 onChange={this.handleChange}
                 className={
                   this.state.formError &&
-                    this.state.formError.Email &&
-                    this.state.formError.Email.status
+                    this.state.formError.city &&
+                    this.state.formError.city.status
                     ? ""
                     : "inputs-error"
                 }
-                name="provider_email"
-                type="email"
-                autoComplete="email"
-                placeholder="example@email.com"
-                value={this.state.provider_email}
-                prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              />
+                type="text"
+                name="city"
+                placeholder="Select Provider City"
+                value={this.state.city}
+                />
               {this.state.formError &&
-                this.state.formError.Email &&
-                this.state.formError.Email.status ? (
+                this.state.formError.city &&
+                this.state.formError.city.status ? (
                 <></>
               ) : (
                 <div className="error-text">
-                  {this.state.formError.Email.massage}
+                  {this.state.formError.city.massage}
                 </div>
               )}
-              <label className="formLabel">Appointment Type</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Provider Address</label>
+              <Input
+                onChange={this.handleChange}
+                style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                className={
+                  this.state.formError &&
+                    this.state.formError.address_line1 &&
+                    this.state.formError.address_line1.status
+                    ? ""
+                    : "inputs-error"
+                }
+                type="text"
+                name="address_line1"
+                placeholder="Enter Provider Address"
+                value={this.state.address_line1}
+                // prefix={<HomeOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              />
+              {this.state.formError &&
+                this.state.formError.address_line1 &&
+                this.state.formError.address_line1.status ? (
+                <></>
+              ) : (
+                <div className="error-text">
+                  {this.state.formError.address_line1.massage}
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 20 }} >
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Appointment Type</label>
               {this.state.office_services.length > 0 ? (
                 <Select
+                suffixIcon= {<img src={arrow} alt="" />}
                   className={
                     this.state.formError &&
                       this.state.formError.Type &&
@@ -525,6 +586,7 @@ class AddProvider extends Component {
                       ? "inputs w100p"
                       : "inputs-error w100p"
                   }
+                  style={{ width: 332, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
                   mode="multiple"
                   placeholder="Select Appointment"
                   defaultValue={[]}
@@ -567,9 +629,13 @@ class AddProvider extends Component {
                   {this.state.formError.Type.massage}
                 </div>
               )}
-              <label className="formLabel">Operatories</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }}>Operatories</label>
               <Select
+                style={{ width: 332, height: 42, borderRadius: '7px', border: '1px solid #6B43B5' }}
                 mode="multiple"
+                suffixIcon= {<img src={arrow} alt="" />}
                 className="w100p"
                 placeholder="Select Operatories"
                 defaultValue={[]}
@@ -578,14 +644,16 @@ class AddProvider extends Component {
               >
                 {this.state.operatories}
               </Select>
-
-              <label className="formLabel">Provider Specialty</label>
+            </Col>
+            <Col span={8}>
+              <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }}>Provider Specialty</label>
               <Radio.Group
+                className="radio-provider"
                 name="provider_specialty"
                 value={this.state.provider_specialty}
                 onChange={this.handleChange}
               >
-                <Radio value="Dental Hygienist">Dental Hygienist</Radio>
+                <Radio className="mr-radio" value="Dental Hygienist">Dental Hygienist</Radio>
                 <Radio value="General Dentist">General Dentist</Radio>
               </Radio.Group>
               {this.state.formError &&
@@ -597,58 +665,79 @@ class AddProvider extends Component {
                   {this.state.formError.Specialty.massage}
                 </div>
               )}
-              <label className="formLabel">Provider Image</label>
-              {this.state.formError &&
-                this.state.formError.Image &&
-                this.state.formError.Image.status ? (
-                <></>
-              ) : (
-                <div className="error-text">
-                  {this.state.formError.Image.massage}
-                </div>
-              )}
-              <div
-                className={
-                  this.state.formError &&
-                    this.state.formError.Image &&
-                    this.state.formError.Image.status
-                    ? "inputs mb50"
-                    : "inputs-error mb50"
-                }
-              >
-                <input
-                  accept="image/png, image/jpeg"
-                  onChange={(e) => this.handleUpload(e)}
-                  id="inputImageFile"
-                  type="file"
-                  name="file"
-                />
-              </div>
-              <div className="tac">
-                {this.state.provider_image ? (
-                  <img
-                    width="150"
-                    height="100"
-                    alt="avatar"
-                    src={URL.createObjectURL(this.state.provider_image)}
-                  />
-                ) : (
-                  <></>
-                )}
-              </div>
-
-              <div className="btnBox df">
-                <button
-                  onClick={this.handleSubmit}
-                  className="createBtn fullWidth100p"
-                  type="submit"
-                  disabled={this.state.sending_data}
-                >
-                  {this.state.sending_data ? "Sending ..." : "Send"}
-                </button>
-              </div>
+            </Col>
+          </Row>
+          <label style={{ fontSize: '16px', fontWeight: '400', marginBottom: 20 }} >Provider Image</label>
+          {this.state.formError &&
+            this.state.formError.Image &&
+            this.state.formError.Image.status ? (
+            <></>
+          ) : (
+            <div className="error-text">
+              {this.state.formError.Image.massage}
             </div>
+          )}
+
+          <div
+            style={{ width: 290, height: 110, border: '1px dashed rgba(183, 183, 183, 1)', borderWidth: 2, borderRadius: '8px' }}
+            className={
+              this.state.formError &&
+                this.state.formError.Image &&
+                this.state.formError.Image.status
+                ? "inputs mb50"
+                : "inputs-error mb50"
+            }
+          >
+            {/* <input
+              accept="image/png, image/jpeg"
+              onChange={(e) => this.handleUpload(e)}
+              id="inputImageFile"
+              type="file"
+              name="file"
+            />
+            <p className="ant-upload-drag-icon">
+              <img src={export1} alt='' />
+            </p>
+            <p style={{ fontSize: 12, color: 'rgba(183, 183, 183, 1)' }}>Drag and drop or<Button type="link" style={{ margin: 0, fontSize: 12 }}>Browse</Button> your files</p> */}
+
+            <input
+              type="file"
+              style={{ display: 'none' }}
+              onChange={(e) => this.handleUpload(e)}
+            />
+            <label  style={{ background: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 0 }}>
+              <p style={{marginTop: 10}}>
+                <img src={export1} alt='' />
+              </p>
+              <p style={{ fontSize: 12, color: 'rgba(183, 183, 183, 1)' }}>
+                Drag and drop or
+                <Button type="link" style={{ margin: 0, fontSize: 12 }} onChange={(e) => this.handleUpload(e)}>Browse</Button> your files
+              </p>
+            </label>
           </div>
+          <div className="tac">
+            {this.state.provider_image ? (
+              <img
+                width="150"
+                height="100"
+                alt="avatar"
+                src={URL.createObjectURL(this.state.provider_image)}
+              />
+
+            ) : (
+              <></>
+            )}
+          </div>
+        </Card>
+        <div className="box-btn">
+          <Button
+            onClick={this.handleSubmit}
+            className="btn-provider"
+            type="submit"
+            disabled={this.state.sending_data}
+          >
+            {this.state.sending_data ? "Creating ..." : "Create"}
+          </Button>
         </div>
       </DashboardLayout>
     );

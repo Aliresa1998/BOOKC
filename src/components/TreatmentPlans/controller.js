@@ -199,7 +199,7 @@ const RemoveTreatmentPlans = async (id) => {
     url =
         config.apiGateway.URL +
         "/clinics/treatmentplan-rud/" +
-        id + "/"
+        id + "/"  + "?office_id=" + localStorage.getItem("selectedOffice") 
 
     const req = new Request(url, {
         method: "DELETE",

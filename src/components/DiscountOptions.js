@@ -6,10 +6,11 @@ import {
   Spin,
   Input,
   Row,
-  notification, Popconfirm,
+  notification,
+  Space,
   InputNumber,
-  Tag,
   Table,
+  Typography
 } from "antd";
 import React, { Component } from "react";
 import { connect } from "react-redux";
@@ -18,6 +19,12 @@ import DashboardLayout from "../layout/dashboardLayout/DashboardLayout";
 import "./app.local.css";
 import { controllerBooking } from "./../controllerBooking";
 import { Error } from "../ErrorHandeling";
+import trash from '../assets/icons/trash.png';
+import edit from '../assets/icons/edit.png';
+import up from '..//assets/icons/up.png';
+import down from '../assets/icons/down.png';
+
+const { Title } = Typography
 
 
 class DiscountOptions extends Component {
@@ -47,6 +54,10 @@ class DiscountOptions extends Component {
     this.getLogo();
 
     this.state = {
+      percentage: 0
+    };
+
+    this.state = {
       loading: false,
       formError: {
         time_to_appointment: {
@@ -65,7 +76,7 @@ class DiscountOptions extends Component {
       DiscountList: [],
       openNew: false,
       data: {
-        percentage: "",
+        percentage: 0,
         time_to_appointment: "",
       },
     };
@@ -198,6 +209,24 @@ class DiscountOptions extends Component {
     }, 500);
   };
 
+  increasePercentage = () => {
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        percentage: prevState.data.percentage >= 100 ? 100 : parseInt(prevState.data.percentage,) + 1
+      }
+    }));
+  };
+
+  decreasePercentage = () => {
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        percentage: prevState.data.percentage <= 0 ? 0 : parseInt(prevState.data.percentage,) - 1
+      }
+    }));
+  };
+
 
   render() {
     const { profileSummary } = this.props;
@@ -206,9 +235,11 @@ class DiscountOptions extends Component {
         title: "ID",
         dataIndex: "id",
         key: "id",
+        width: '89px'
       },
       {
         title: "Office",
+        width: '226px',
         render: (_, record) => (
           <>
             {record
@@ -223,6 +254,7 @@ class DiscountOptions extends Component {
       },
       {
         title: "Percentage",
+        width: '217px',
         render: (_, record) => (
           <>{record ? (record.percentage ? record.percentage + "%" : "-") : "-"}</>
         ),
@@ -231,11 +263,13 @@ class DiscountOptions extends Component {
         title: "Time to Appointment",
         key: "time_to_appointment",
         dataIndex: "time_to_appointment",
+        width: '261px',
       },
       {
         title: "Status",
         key: "tags",
         dataIndex: "tags",
+        width: '179px',
         render: (_, record) => (
 
           this.state.loadingActive && this.state.loadingActiveID == record.id ?
@@ -255,9 +289,10 @@ class DiscountOptions extends Component {
       {
         title: "Action",
         key: "action",
+        width: '114px',
         render: (_, record) => (
           <>
-            <Tag
+            {/* <Tag
               onClick={() => {
                 this.handleUpdate(record);
               }}
@@ -275,11 +310,65 @@ class DiscountOptions extends Component {
               <Tag color={"volcano"} style={{ cursor: "pointer" }}>
                 Remove
               </Tag>
-            </Popconfirm>
+            </Popconfirm> */}
+            <Space size="middle">
+              <Button
+                type="text"
+                icon={<img src={trash} alt="" />}
+                style={{ color: "#979797" }}
+                onClick={() => {
+                  this.handleDelete(record);
+                }}
+              />
+              <Button
+                type="text"
+                icon={<img src={edit} alt="" />}
+                style={{ color: "#979797" }}
+                onClick={() => {
+                  this.handleUpdate(record);
+                }}
+              />
+            </Space>
+
           </>
         ),
       },
     ];
+
+    const data = [
+      {
+        id: 1,
+        office: {
+          name: "Office A"
+        },
+        percentage: 80,
+        time_to_appointment: "2 days",
+        tags: ["active"],
+        is_active: true
+      },
+      {
+        id: 2,
+        office: {
+          name: "Office B"
+        },
+        percentage: 60,
+        time_to_appointment: "3 days",
+        tags: ["inactive"],
+        is_active: false
+      },
+      {
+        id: 3,
+        office: {
+          name: "Office C"
+        },
+        percentage: 90,
+        time_to_appointment: "1 day",
+        tags: ["active"],
+        is_active: true
+      },
+      // Add more data as needed
+    ];
+
     return (
       <DashboardLayout
         breadCrumb={"Discount Options"}
@@ -288,7 +377,7 @@ class DiscountOptions extends Component {
       >
         <div className="paymentRequestContent">
           <Row justify="space-between" type="flex">
-            <label className="formLabel">Discount Options</label>
+            <Title level={3} style={{ marginBottom: 25 }}>Discounts</Title>
             <Button
               type="primary"
               onClick={() => {
@@ -298,54 +387,63 @@ class DiscountOptions extends Component {
               }}
               className="mw120"
             >
-              + New
+              Add
             </Button>
           </Row>
 
           <div className="payreq-container pt10">
             <Row type="flex" justify="space-between">
               <Col span={24}>
-                <Table columns={columns} dataSource={this.state.DiscountList} />
+                <Table
+                  columns={columns}
+                  dataSource={this.state.DiscountList}
+                  //dataSource={data}
+                  pagination={false}
+                />
               </Col>
             </Row>
           </div>
         </div>
         <Modal
+          style={{ maxWidth: 352, maxHeight: 354 }}
           footer={[
-            <Button
-              onClick={() => {
-                this.setState({
-                  data: {
-                    time_to_appointment: null,
-                    percentage: null,
-                  },
-                  formError: {
-                    time_to_appointment: {
-                      massage: "",
-                      status: true,
-                    },
-                    percentage: {
-                      massage: "",
-                      status: true,
-                    },
-                  },
-                  openNew: false,
-                });
-              }}
-              key="Close"
-              className="mw100"
-            >
-              Close
-            </Button>,
-            <Button
-              disabled={this.state.loading}
-              onClick={this.handleCreateNewRule}
-              key="Create"
-              type="primary"
-              className="mw100"
-            >
-              {this.state.loading ? "Creating..." : "Create"}
-            </Button>,
+            // <Button
+            //   onClick={() => {
+            //     this.setState({
+            //       data: {
+            //         time_to_appointment: null,
+            //         percentage: null,
+            //       },
+            //       formError: {
+            //         time_to_appointment: {
+            //           massage: "",
+            //           status: true,
+            //         },
+            //         percentage: {
+            //           massage: "",
+            //           status: true,
+            //         },
+            //       },
+            //       openNew: false,
+            //     });
+            //   }}
+            //   key="Close"
+            //   className="mw100"
+            // >
+            //   Close
+            // </Button>,
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: "center", marginBottom: 20 }}>
+              <Button
+                disabled={this.state.loading}
+                onClick={this.handleCreateNewRule}
+                key="Create"
+                type="primary"
+                className="mw1000"
+              >
+                {this.state.loading ? "Creating..." : "Create"}
+              </Button>
+            </div>
+            ,
           ]}
           title="Create Rule"
           visible={this.state.openNew}
@@ -355,8 +453,9 @@ class DiscountOptions extends Component {
             });
           }}
         >
-          <label className="inputLabel mt0">Time to Appointment</label>
+          <label className="inputLabel mt0" style={{ marginTop: 26, marginBottom: 15, marginLeft: 10 }}>Time to Appointment</label>
           <InputNumber
+            style={{ width: 290, height: 39, marginLeft: 10, border: '1px solid #6B43B5' }}
             className={
               this.state.formError &&
                 this.state.formError.time_to_appointment &&
@@ -373,7 +472,7 @@ class DiscountOptions extends Component {
                 },
               });
             }}
-            placeholder="Minute"
+            placeholder="Enter Time to Appointment"
           />
           {this.state.formError &&
             this.state.formError.time_to_appointment &&
@@ -385,8 +484,9 @@ class DiscountOptions extends Component {
             </div>
           )}
           <br />
-          <label className="inputLabel mt5">Percentage</label>
-          <Input
+          <label className="inputLabel mt5" style={{ marginBottom: 15, marginLeft: 10 }}>Percentage</label>
+          {/* <Input
+            style={{marginBottom: 45, width: 290, height: 39, marginLeft: 10, border: '1px solid #6B43B5'}}
             className={
               this.state.formError &&
                 this.state.formError.percentage &&
@@ -405,7 +505,53 @@ class DiscountOptions extends Component {
               });
             }}
             placeholder="0"
+          /> */}
+          <Input
+            style={{
+              marginBottom: 45,
+              width: 290,
+              height: 39,
+              marginLeft: 10,
+              border: '1px solid #6B43B5',
+
+            }}
+            suffix={<img src={up} alt="" onClick={this.increasePercentage} />}
+            prefix={<img src={down} alt="" onClick={this.decreasePercentage} />}
+            placeholder="0.00%"
+            min={0}
+            max={100}
+            formatter={value => `${parseInt(value, 10)}%`}
+            parser={value => {
+              const parsedValue = value.replace('%', ''); // Remove %
+              const numericValue = parsedValue.startsWith('+') ? parsedValue.substring(1) : parsedValue; // Remove leading +
+
+              const intValue = parseInt(numericValue, 10);
+              if (!isNaN(intValue) && Number.isInteger(intValue)) {
+                return numericValue;
+              }
+              return '';
+            }}
+            value={this.state.data.percentage}
+            onChange={value => {
+              const parsedValue = isNaN(value) ? 0 : parseInt(value, 10);
+              this.setState(prevState => ({
+                data: {
+                  ...prevState.data,
+                  percentage: parsedValue
+                }
+              }));
+            }}
+            className={
+              this.state.formError &&
+                this.state.formError.percentage &&
+                this.state.formError.percentage.status
+                ? "w100p"
+                : "inputs-error w100p"
+            }
+          // addonBefore={<button onClick={this.decreasePercentage} className="decrease-btn">-</button>}
+          // addonAfter={<button onClick={this.increasePercentage} className="increase-btn">+</button>}
           />
+
           {this.state.formError &&
             this.state.formError.percentage &&
             this.state.formError.percentage.status ? (

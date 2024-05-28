@@ -7,3 +7,212 @@
 .mt8{
     margin-top: 8px;
 }
+
+.card-provider1 {
+    margin-left: 32px;
+    margin-right: 32px;
+    margin-bottom: 32px;
+    margin-top: 22px;
+    padding-left: 25px;
+    padding-top: 20px;
+    /* padding-right: 30px; */
+    width: 95%;
+}
+
+/* .radio-flex {
+    display: flex !important;
+    flex-direction: row !important;
+  }
+  
+  .radio-margin {
+    margin-right: 99px;
+  } */
+  
+  .circle-card1 {
+    width: 450px ;
+    height: 54px;
+    border-radius: 1000px !important;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    padding: 0px !important;
+  }
+  
+  .radio-gp {
+    border-radius: 1000px !important;
+    border: none !important;
+    margin-right: 20px !important;
+    font-size: 14px !important;
+    width: 426px;
+    display: flex;
+    flex-direction: row !important;
+  
+  }
+  
+  .radio-gp12 {
+    border-radius: 1000px !important;
+    border: none !important;
+    font-size: 14px !important;
+    width: 200px;
+    height: 37px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row !important;
+  
+  }
+  
+  .radio-gp .ant-radio-button-wrapper, .radio-gp1 .ant-radio-button-wrapper {
+    border: none; 
+  }
+  
+  .radio-gp .ant-radio-button-wrapper:not(:first-child)::before,
+  .radio-gp1 .ant-radio-button-wrapper:not(:first-child)::before {
+    display: none; 
+  }
+  
+  .radio-gp .ant-radio-button-wrapper:last-child,
+  .radio-gp1 .ant-radio-button-wrapper:last-child {
+    border-right: none;
+  }
+  
+  .radio-gp .ant-radio-button-wrapper.ant-radio-button-wrapper-checked {
+    background: #6B43B5!important;
+  }
+
+  .modal-size1 {
+    min-width: 538px !important;
+    overflow-y: unset !important;
+  }
+
+  .custom-card12 .ant-card-body {
+    padding: 0 !important;
+  }
+
+  .custom-card12 {
+    position: relative;
+    border-radius: 8px;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-bottom: 12px !important;
+    width: 215px;
+    height: 60px;
+    display: flex !important;
+  }
+
+  .selected-card {
+    background: rgba(224, 221, 247, 1);
+   }
+  
+  .not-selected-card {
+   background:  white;
+   border: 1px solid rgba(201, 193, 241, 0.3)
+  }
+  
+  .custom-checkbox {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    z-index: 1000;
+  }
+
+
+  .custom-checkbox .ant-checkbox-inner {
+    border-radius: 50%;
+  }
+  
+
+.custom-checkbox .ant-checkbox,
+.custom-checkbox .ant-checkbox-inner,
+.custom-checkbox .ant-checkbox-input {
+  width: 24px; 
+  height: 24px; 
+
+}
+
+.custom-checkbox .ant-checkbox-inner::after {
+  width: 5px; 
+  height: 10px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1.6px;
+  margin-bottom: 6px !important;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+
+  
+}
+
+.custom-checkbox  .ant-checkbox-input:checked + .ant-checkbox-inner {
+  border: 4px solid white !important; 
+}
+
+
+.custom-checkbox .ant-checkbox-input:not(:checked) + .ant-checkbox-inner {
+  width: 18px; 
+  height: 18px; 
+}
+
+.custom-checkbox .ant-checkbox-input:not(:checked) + .ant-checkbox-inner::after {
+  width: 14px; 
+  height: 14px; 
+}
+
+.image-pay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 0;
+}
+
+.row-cont {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100% !important;
+}
+  
+.payment-details {
+  font-size: 14px;
+  color: #000;
+  margin-top: 20px;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.payment-label {
+  font-weight: bold;
+}
+
+.payment-value {
+  font-weight: normal;
+}
+
+.payment-details1 {
+  font-size: 14px;
+  color: #000;
+}
+
+.credit-card-form {
+}
+
+.credit-card-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.credit-card-form .ant-input,
+.credit-card-form .ant-select-selector {
+  border-radius: 4px;
+}
+
+.credit-card-form .ant-input:focus,
+.credit-card-form .ant-select-focused .ant-select-selector {
+  border-color: #9254de;
+  box-shadow: 0 0 0 2px rgba(146, 84, 222, 0.2);
+}
+

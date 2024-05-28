@@ -58,8 +58,11 @@
 }
 
 .tag_reason {
-  margin-right: 0px;
-  margin-left: 2px;
+  /* margin-right: 28px; */
+  margin-left: 10px;
+  color: rgba(107, 67, 181, 1) !important;
+  border-radius: 50px;
+  border: 1px solid rgba(107, 67, 181, 1) !important;
 }
 
 .invoice_color {
@@ -72,4 +75,70 @@
 
 .fullWidth100p {
   width: 100%;
+}
+
+.flex-row-evenlyy {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+}
+
+.flex-row12{
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-evenly !important;
+    /* width: 100% !important; */
+    margin-top: 28px;
+}
+
+.reason-span {
+  margin-left: auto;
+}
+
+.reason-color {
+  color: rgba(183, 183, 183, 1);
+  margin-left: 15px
+  ;
+}
+
+.flex-row123{
+  display: flex !important;
+  flex-direction: row !important;
+  /* width: 100% !important; */
+  margin-top: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.card-size11 {
+  width: 224px !important;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  flex-direction: row !important;
+}
+
+.flex-row111{
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.amount-size-color {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: rgba(107, 67, 181, 1)!important;
+}
+
+.reason-span1 {
+  margin-left: auto;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: rgba(107, 67, 181, 1)!important;
+}
+
+.tag-mr {
+  margin-right:10px ;
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100%!important;
 }

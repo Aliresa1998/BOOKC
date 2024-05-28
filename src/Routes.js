@@ -61,6 +61,8 @@ import Helcim from "./Helcim"
 import LoginPage from './Login/LoginPage'
 import { controller } from './Login/controller'
 import TreatmentPlans from '../src/components/TreatmentPlans/TreatmentPlans'
+import Campaigns from '../src/components/Marketing/Campaigns'
+import CreateCampaigns from './components/Marketing/CreateCampaigns'
 
 export default class AppParent extends React.Component {
 
@@ -124,6 +126,8 @@ export default class AppParent extends React.Component {
                   <Route path={routes.ORAL} component={Oral} />
                   <Route path={routes.TREATMENTPLAN} component={TreatmentPlan} />
                   <Route path={routes.TreatmentPlans} component={TreatmentPlans} />
+                  <Route path={routes.Campaigns} component={Campaigns} />
+                  <Route path={routes.CreateCampaigns} component={CreateCampaigns} />
                   <Route path={routes.NEWHOME} component={HomeNew} />
                   <Route path={routes.PROCEDURES} component={Procedures} />
                   <Route path={routes.HEALTHCATEGORY} component={HealthCategories} />

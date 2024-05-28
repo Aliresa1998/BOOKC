@@ -1710,6 +1710,12 @@ chart-wrapper {
 
 .mw100 {
   min-width: 100px;
+  
+}
+
+.mw1000{
+  width: 139px;
+  height: 38px;
 }
 
 .p28 {
@@ -2147,11 +2153,17 @@ chart-wrapper {
 }
 
 .Icon {
-  width: 16px !important;
-  height: 16px !important;
+  width: 19px !important;
+  height: 19px !important;
   margin-right: 10px;
 }
 
 .sidebar_menuitem1 {
   margin-bottom: 35px !important;
+}
+
+.align-menu {
+  display: flex;
+  align-items: center;
+
 }
