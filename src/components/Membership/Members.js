@@ -25,6 +25,7 @@ import CustomTable from "./Components/CustomTable";
 import GrayCard from "./Components/GrayCard";
 import History from "./Components/History";
 import ProfileCard from "./Components/ProfileCard";
+import BluCard from '../Membership/Components/BlueCard.js';
 import DonutChart from "../../New/component/DonutChart";
 import BarChart from "./BarChart";
 
@@ -35,6 +36,14 @@ import StackedColumns100Chart from "./StackedColumns100Chart";
 import "./style.css";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import Pic1 from "../../assets/img/imgo4.jpg";
+import edit from '../../assets/icons/edit.png';
+import delete1 from '../../assets/icons/trash.png';
+import up2 from '../../assets/icons/Polygon 1.png';
+import down2 from '../../assets/icons/Polygon 2.png';
+import people from '../../assets/icons/people.png';
+import money from '../../assets/icons/money.png';
+import search from '../../assets/icons/search-normal.png';
+import eye from '../../assets/icons/eye.png';
 
 const { Text, Title } = Typography;
 const { Search } = Input;
@@ -120,18 +129,25 @@ const columns = [
     title: "Treatment Plans",
     dataIndex: "treatmentPlans",
     key: "treatmentPlans",
-    render: (text, record) => (
-      <span>
-        <Text>{record.treatmentPlans.plans} :</Text>
-        <Text style={{ marginLeft: 2 }}>
-          {record.treatmentPlans.approved} Approved
-        </Text>
-        <Text style={{ marginLeft: 2, marginRight: 2 }}> + </Text>
-        <Text style={{ marginLeft: 2 }}>
-          {record.treatmentPlans.unapproved} Unapproved
-        </Text>
-      </span>
-    ),
+    render: (treatmentPlans, record) => {
+      // Check if treatmentPlans exists and has the necessary sub-properties
+      if (!treatmentPlans || !treatmentPlans.plans || treatmentPlans.approved === undefined || treatmentPlans.unapproved === undefined) {
+        return <span>No treatment plans available</span>;
+      }
+
+      return (
+        <span>
+          <Text>{treatmentPlans.plans} :</Text>
+          <Text style={{ marginLeft: 2 }}>
+            {treatmentPlans.approved} Approved
+          </Text>
+          <Text style={{ marginLeft: 2, marginRight: 2 }}> + </Text>
+          <Text style={{ marginLeft: 2 }}>
+            {treatmentPlans.unapproved} Unapproved
+          </Text>
+        </span>
+      );
+    },
   },
   {
     title: "Action",
@@ -169,26 +185,22 @@ const columns2 = [
     dataIndex: "status",
     render: (status) => (
       <Tag
-        color={status === "Active" ? "rgba(35, 208, 32, 0.2)" : "volcano"}
-        style={{ borderRadius: "20px", color: "#23D020" }}
+        color={status === "active" ? "rgba(35, 208, 32, 0.2)" : "volcano"}
+        style={{ borderRadius: "20px", color: "rgba(35, 208, 32, 1)", width: 76, textAlign: 'center' }}
       >
-        {status.toUpperCase()}
+        {status.charAt(0).toUpperCase() + status.slice(1)}
       </Tag>
     ),
   },
   {
     title: "Action",
+    align: 'right',
     key: "action",
     render: (text, record) => (
       <Space size="middle">
         <Button
           type="text"
-          icon={<DeleteOutlined />}
-          style={{ color: "#979797" }}
-        />
-        <Button
-          type="text"
-          icon={<EditOutlined />}
+          icon={<img src={delete1} alt="" />}
           style={{ color: "#979797" }}
         />
       </Space>
@@ -202,14 +214,14 @@ const data2 = [
     name: "Membership Plan",
     startDate: "2023/12/12",
     expiryDate: "2024/12/12",
-    status: "Active",
+    status: "active",
   },
   {
     key: "2",
     name: "Membership Plan",
     startDate: "2023/12/12",
     expiryDate: "2024/12/12",
-    status: "Active",
+    status: "active",
   },
 ];
 
@@ -313,6 +325,8 @@ class Members extends Component {
       subscriptionRows: tempSub,
     });
   };
+
+
   getLogo = async () => {
     const response = await controller.getLogo();
     this.setState({ serverLogo: response.data.dark });
@@ -353,14 +367,6 @@ class Members extends Component {
     });
   };
 
-  // changeCurrentStateToShowMemberDetail = (id) => {
-  //   this.getMemberData(id);
-  //   this.setState({
-  //     selectedMemberId: id, // Set selectedMemberId instead of selectedMember
-  //     currentState: "showMemberDetail",
-  //   });
-  // };
-
   changeCurrentStateToShowMemberDetail = (row) => {
     this.getMemberData(row.id);
     this.setState({
@@ -368,6 +374,17 @@ class Members extends Component {
       currentState: "showMemberDetail",
     });
   };
+
+
+
+
+  // changeCurrentStateToShowMemberDetail = (row) => {
+  //   this.getMemberData(row.id);
+  //   this.setState({
+  //     selectedMember: row,
+  //     currentState: "showMemberDetail",
+  //   });
+  // };
 
   handleChangePage = async (pageNumber) => {
     this.setState({
@@ -449,6 +466,7 @@ class Members extends Component {
       },
       selectedMember: 0,
       selectedSub: 0,
+      selectedMemberId: 0,
       currentState: "showTable",
       totalMemmber: 8,
       members: [],
@@ -527,7 +545,7 @@ class Members extends Component {
 
   render() {
     const { profileSummary } = this.props;
-    const { members } = this.state; 
+    const { members } = this.state;
 
     const mappedData = members && members.map(plan => ({
       key: plan.id.toString(),
@@ -542,6 +560,43 @@ class Members extends Component {
       },
 
     }))
+
+    class Priority extends Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          count: Number(this.props.initialPriority)
+        };
+      }
+
+      increasePriority = async () => {
+        const newPriority = Number(this.state.count) + 1;
+        this.setState({ count: newPriority });
+        this.props.onUpdate(newPriority, this.props.record);
+      };
+
+      decreasePriority = async () => {
+        const newPriority = Math.max(Number(this.state.count) - 1, 0);
+        this.setState({ count: newPriority });
+        this.props.onUpdate(newPriority, this.props.record);
+      };
+
+      componentDidUpdate(prevProps) {
+        if (prevProps.initialPriority !== this.props.initialPriority) {
+          this.setState({ count: this.props.initialPriority });
+        }
+      }
+
+      render() {
+        return (
+          <div className="div-prority">
+            <Button type="text" icon={<img src={down2} alt="" />} onClick={this.decreasePriority} />
+            <p className="p-fontSize"> {this.state.count} </p>
+            <Button type="text" icon={<img src={up2} alt="" />} onClick={this.increasePriority} />
+          </div>
+        );
+      }
+    }
 
 
     const initialData = [
@@ -576,21 +631,31 @@ class Members extends Component {
         title: "Priority",
         dataIndex: "priority",
         key: "priority",
+        render: (priority, record) => (
+          <Priority
+            initialPriority={priority}
+            onUpdate={(newPriority, record) => {
+
+            }}
+            record={record}
+          />
+        ),
       },
       {
         title: "Action",
+        align: 'right',
         key: "action",
         render: (_, record) => (
           <span>
             <Space size="middle">
               <Button
                 type="text"
-                icon={<DeleteOutlined />}
+                icon={<img src={delete1} alt="" />}
                 style={{ color: "#979797" }}
               />
               <Button
                 type="text"
-                icon={<EditOutlined />}
+                icon={<img src={edit} alt="" />}
                 style={{ color: "#979797" }}
               />
             </Space>
@@ -647,29 +712,39 @@ class Members extends Component {
         title: "Treatment Plans",
         dataIndex: "treatmentPlans",
         key: "treatmentPlans",
-        render: (text, record) => (
-          <span>
-            <Text>{record.treatmentPlans.plans} :</Text>
-            <Text style={{ marginLeft: 2 }}>
-              {record.treatmentPlans.approved} Approved
-            </Text>
-            <Text style={{ marginLeft: 2, marginRight: 2 }}> + </Text>
-            <Text style={{ marginLeft: 2 }}>
-              {record.treatmentPlans.unapproved} Unapproved
-            </Text>
-          </span>
-        ),
+        render: (treatmentPlans, record) => {
+          // Check if treatmentPlans exists and has the necessary sub-properties
+          if (!treatmentPlans || !treatmentPlans.plans || treatmentPlans.approved === undefined || treatmentPlans.unapproved === undefined) {
+            return <span>No treatment plans available</span>;
+          }
+
+          return (
+            <span>
+              <Text>{treatmentPlans.plans} :</Text>
+              <Text style={{ marginLeft: 2 }}>
+                {treatmentPlans.approved} Approved
+              </Text>
+              <Text style={{ marginLeft: 2, marginRight: 2 }}> + </Text>
+              <Text style={{ marginLeft: 2 }}>
+                {treatmentPlans.unapproved} Unapproved
+              </Text>
+            </span>
+          );
+        },
       },
       {
         title: "Action",
+        align: 'center',
         key: "action",
-        render: (row, index) => (
-          <Button type="link"
-            onClick={() => {
-              this.changeCurrentStateToShowMemberDetail(row);
-            }}>
-            View
-          </Button>
+        render: (text, record) => (
+
+          <Button
+            type="text"
+            icon={<img src={eye} alt="" />}
+            style={{ color: "#979797" }}
+            onClick={() => this.changeCurrentStateToShowMemberDetail(record.id)}
+          />
+
         ),
       },
     ];
@@ -710,55 +785,87 @@ class Members extends Component {
 
     return (
       <DashboardLayout
-        breadcrumb={false}
         logo={"x"}
         footerLogo={this.state.serverLogo}
       >
         <div style={{ marginLeft: 20, marginTop: 40 }}>
           {this.state.currentState === "showTable" ? (
             <React.Fragment>
-              {/* <div className="page-breadcrumb">
-                <span className="breadcrumb-part">Members</span>
-              </div>
-              <div className="paymentRequestContent">
-                <div className="payreq-container">
-                  <CustomTable
-                    handleChangePage={this.handleChangePage}
-                    count={this.state.count}
-                    page={this.state.page}
-                    page_size={this.state.page_size}
-                    changeCurrentStateToShowMemberDetail={
-                      this.changeCurrentStateToShowMemberDetail
-                    }
-                    columns={columns}
-                    rows={this.state.members}
-                    type="memberList"
-                  />
-                </div>
-              </div> */}
-              <div style={{ marginLeft: 20, marginTop: 30 }}>
-                <Title level={3}>Members</Title>
-                <Table
+              <div style={{ marginTop: 30 }}>
+                <Title level={3} style={{ marginBottom: 25 }}>Members</Title>
+                <Card style={{ width: '99%' }}>
+                  <div className="flex-row-evenlyy">
+                    <BluCard name={"Total Member"} value={this.state.totalMemmber} icon={people} style={{ width: 398, height: 121 }} />
+                    <BluCard name={"MRR"} value={this.state.mrr} icon={money} style={{ width: 328, height: 121 }} />
+                    <div >
+                      <Input
+                        value={this.state.searchMember}
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          this.setState({
+                            searchMember: value,
+                          });
+                        }}
+
+                        size="large"
+                        placeholder="Search members"
+                        suffix={<img src={search} alt="" />}
+                        style={{ marginBottom: '20px', height: 52, border: '1px solid #6B43B5' }}
+                      />
+                      <Button
+                        type="primary"
+                        size="large"
+                        block
+                        style={{ height: 52, marginTop: 6 }}
+                        onClick={() => {
+                          this.setState({
+                            visibleCreateMemberModal: true,
+                          });
+                        }}
+                      >
+                        Create Member
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <CustomTable
+                  handleChangePage={this.handleChangePage}
+                  count={this.state.count}
+                  page={this.state.page}
+                  page_size={this.state.page_size}
+                  changeCurrentStateToShowMemberDetail={
+                    this.changeCurrentStateToShowMemberDetail
+                  }
+                  columns={columns}
+                  rows={this.state.members}
+                  type="memberList"
+
+                />
+
+                {/* <Table
                   row={this.state.members}
                   columns={ColumnsMem}
                   dataSource={mappedData}
                   pagination={false}
+                  changeCurrentStateToShowMemberDetail={
+                    this.changeCurrentStateToShowMemberDetail
+                  }
+                  rows={this.state.members}
+                  type="memberList"
                   style={{
-                    width: "97%",
+                    width: "99%",
                     marginTop: 30,
                     borderRadius: "8px",
                     boxShadow: "0px 0px 10px 0px #00000026",
                   }}
-                />
+                /> */}
               </div>
             </React.Fragment>
           ) : this.state.currentState == "showMemberDetail" ? (
-            <React.Fragment>
-              <div className="page-breadcrumb">
-                <span className="breadcrumb-part">
-                  Members {"/"} View member
-                </span>
-              </div>
+            <div style={{ width: '97%' }}>
+
               <Row gutter={[30, 30]}>
                 <Col xs={24} sm={12} lg={8}>
                   <Card style={{ textAlign: "center" }}>
@@ -766,17 +873,17 @@ class Members extends Component {
                       style={{
                         fontSize: "20px",
                         color: " #000",
-                        fontWeight: 500,
-                        marginBottom: 20,
+                        fontWeight: 700,
+                        marginBottom: 40,
                       }}
                     >
                       Oral Health Score
                     </p>
                     <DonutChart
-                      fillPercentage={48}
+                      fillPercentage={4.8}
                       label="Oral Health Score"
                       Value="4.8"
-                      width="270px"
+                      width="300px"
                       fontSize="14px"
                     />
                   </Card>
@@ -787,19 +894,19 @@ class Members extends Component {
                       style={{
                         fontSize: "20px",
                         color: " #000",
-                        fontWeight: 500,
-                        marginBottom: 20,
+                        fontWeight: 700,
+                        marginBottom: 40,
                       }}
                     >
                       Financial Health Score
                     </p>
                     <DonutChart
-                      fillPercentage={68}
+                      fillPercentage={6.8}
                       label="
                            Financial Health
                            Score"
                       Value="6.9"
-                      width="270px"
+                      width="300px"
                       fontSize="14px"
                     />
                   </Card>
@@ -810,17 +917,17 @@ class Members extends Component {
                       style={{
                         fontSize: "20px",
                         color: " #000",
-                        fontWeight: 500,
-                        marginBottom: 20,
+                        fontWeight: 700,
+                        marginBottom: 40,
                       }}
                     >
                       Preventative Core Score
                     </p>
                     <DonutChart
-                      fillPercentage={98}
+                      fillPercentage={9.8}
                       label="Preventative Core Score"
                       Value="9.8"
-                      width="270px"
+                      width="300px"
                       fontSize="14px"
                     />
                   </Card>
@@ -830,57 +937,79 @@ class Members extends Component {
                   <ProfileCard data={this.state.memberProfile} />
                 </Col>
                 <Col xs={24} lg={16}>
-                  <Card style={{ marginBottom: 30 }}>
+                  <Card style={{ marginBottom: 30, paddingBottom: 16, paddingLeft: 16, paddingRight: 16 }}>
                     <p
                       style={{
                         fontSize: "20px",
                         color: " #000",
-                        fontWeight: 500,
+                        fontWeight: 700,
                         marginBottom: 20,
                       }}
                     >Subscription
                     </p>
                     <Table
+
                       columns={columns2}
                       dataSource={data2}
                       pagination={false}
                     />
                   </Card>
-                  <Card>
+                  <Card style={{ paddingBottom: 16, paddingLeft: 16, paddingRight: 16 }}>
                     <p
                       style={{
                         fontSize: "20px",
                         color: " #000",
-                        fontWeight: 500,
+                        fontWeight: 700,
                         marginBottom: 20,
                       }}>
                       Patient Expenditure
                     </p>
-                    <BarChart />
+                    <div style={{ border: '1px solid rgba(240, 240, 240, 1)' }}>
+                      <BarChart />
+                    </div>
                   </Card>
                 </Col>
                 <Col xs={24}>
-                  <Card>
-                    <p
-                      style={{
-                        fontSize: "20px",
-                        color: " #000",
-                        fontWeight: 500,
-                        marginBottom: 20,
-                      }}>
-                      Members
-                    </p>
+                  <Card style={{ marginBottom: 30, paddingBottom: 16, paddingLeft: 16, paddingRight: 16 }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <div>
+                        <p
+                          style={{
+                            fontSize: "20px",
+                            color: " #000",
+                            fontWeight: 700,
+                            marginBottom: 20,
+                          }}>
+                          Treatment Plans
+                        </p>
+                      </div>
+                      <div>
+                        <p
+                          style={{
+                            color: " rgba(151, 151, 151, 1)",
+                            fontSize: "16px",
+                            fontWeight: 500,
+                            marginBottom: 20,
+                          }}>
+                          Treatment Plan Execution Score: <span style={{ fontSize: "18px", fontWeight: 600, color: 'black' }}> 9.8</span>
+
+                        </p>
+
+                      </div>
+                    </div>
                     <Table
+                      className="table-isaac"
                       dataSource={initialData}
                       columns={columns3}
                       pagination={false}
                       rowSelection={Rowkeys}
                     />
                     <Button
+                      className="button-under-table"
                       type="default"
                       style={{
                         width: "100%",
-                        borderRadius: "8px",
+                        // borderRadius: "8px",
                         border: "1px solid #6B43B5",
                         color: "#6B43B5",
                         height: "70px",
@@ -891,7 +1020,7 @@ class Members extends Component {
                   </Card>
                 </Col>
               </Row>
-            </React.Fragment>
+            </div>
           ) : (
             <React.Fragment>
               <div className="page-breadcrumb">
@@ -946,6 +1075,8 @@ class Members extends Component {
                     <div className="mt5"></div>
 
                     <Table
+                      className="table-mem"
+                      style={{ borderRadius: "8px" }}
                       columns={PaymentColumn}
                       dataSource={this.state.paymentHis}
                     />
@@ -970,121 +1101,118 @@ class Members extends Component {
             visible={this.state.visibleCreateMemberModal}
             footer={null}
             onCancel={this.handleCloseAddService}
-            width={800}
+            style={{ minWidth: 700 }}
           >
-            <Row type="flex" justify="space-between">
-              <Col>
-                <label className="formLabel">First Name</label>
+            <Row type="flex" justify="space-between" gutter={[40, 40]}>
+              <Col span={12}>
+                <label className="formLabel" >First Name</label>
                 <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
                   className={"inputs"}
                   onChange={this.handleChange}
                   type="text"
                   name="first_name"
-                  placeholder="Alex"
+                  placeholder="Enter Full Name"
                   value={this.state.newMember.first_name}
                 />
               </Col>
-              <Col>
-                <label className="formLabel">Last Name</label>
-                <Input
-                  className={"inputs"}
-                  onChange={this.handleChange}
-                  type="text"
-                  name="last_name"
-                  placeholder="Doe"
-                  value={this.state.newMember.last_name}
-                />
-              </Col>
-            </Row>
-            <br />
-            <Row type="flex" justify="space-between">
-              <Col>
+              <Col span={12}>
                 <label className="formLabel">Phone</label>
                 <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
                   className={"inputs"}
                   onChange={this.handleChange}
                   type="text"
                   name="phone"
-                  placeholder="+1 4444 123 12 12"
+                  placeholder="Enter Phone Number"
                   value={this.state.newMember.phone}
-                />
-              </Col>
-              <Col>
-                <label className="formLabel">State</label>
-                <Input
-                  className={"inputs"}
-                  onChange={this.handleChange}
-                  type="text"
-                  name="state"
-                  placeholder="Ny"
-                  value={this.state.newMember.state}
                 />
               </Col>
             </Row>
             <br />
-            <Row type="flex" justify="space-between">
-              <Col>
-                <label className="formLabel">City</label>
-                <Input
-                  className={"inputs"}
-                  onChange={this.handleChange}
-                  type="text"
-                  name="city"
-                  placeholder="New york"
-                  value={this.state.newMember.city}
-                />
-              </Col>
-              <Col>
+            <Row type="flex" justify="space-between" gutter={[40, 40]}>
+              <Col span={12}>
                 <label className="formLabel">Email</label>
                 <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
                   className={"inputs"}
                   onChange={this.handleChange}
                   type="text"
                   name="email"
-                  placeholder="alex.doe@gmail.com"
+                  placeholder="Enter Email Address"
                   value={this.state.newMember.email}
                 />
               </Col>
-            </Row>
-            <br />
-            <Row type="flex" justify="space-between">
-              <Col>
-                <label className="formLabel">Address</label>
+              <Col span={12}>
+                <label className="formLabel">Postal Code</label>
                 <Input
-                  className={"inputs"}
-                  onChange={this.handleChange}
-                  type="text"
-                  name="address"
-                  placeholder="256 wfi street"
-                  value={this.state.newMember.address}
-                />
-              </Col>
-              <Col>
-                <label className="formLabel">Zip Code</label>
-                <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
                   className={"inputs"}
                   onChange={this.handleChange}
                   type="text"
                   name="zip_code"
-                  placeholder="12345"
+                  placeholder="Enter Postal Code"
                   value={this.state.newMember.zip_code}
                 />
               </Col>
+
+            </Row>
+            <br />
+            <Row type="flex" justify="space-between" gutter={[40, 40]}>
+              <Col span={12}>
+                <label className="formLabel">State</label>
+                <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
+                  className={"inputs"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="state"
+                  placeholder="Enter State"
+                  value={this.state.newMember.state}
+                />
+              </Col>
+              <Col span={12}>
+                <label className="formLabel">City</label>
+                <Input
+                  style={{ width: 290, height: 39, border: '1px solid #6B43B5' }}
+                  className={"inputs"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="city"
+                  placeholder="Enter City"
+                  value={this.state.newMember.city}
+                />
+              </Col>
+
+            </Row>
+            <br />
+            <Row type="flex" justify="space-between" gutter={[40, 40]}>
+
+
+            </Row>
+            <Row style={{ marginBottom: 50 }}>
+              <Col span={24} >
+                <label className="formLabel">Address</label>
+                <Input
+                  style={{ height: 39, border: '1px solid #6B43B5' }}
+                  className={"inputs"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="address"
+                  placeholder="Enter Address"
+                  value={this.state.newMember.address}
+                />
+              </Col>
+
             </Row>
 
             <div className="btnBox dbf-jce">
               <Button
-                onClick={this.handleCloseAddService}
-                className="white-btn create-payment-request-btn"
-              >
-                Close
-              </Button>
-              <Button
                 type="primary"
                 onClick={this.handleCreateMember}
-                className="login-btn create-payment-request-btn ml5"
+                style={{width: 139, height: 38, background: '#6B43B5'}}
               >
-                Create
+                Add
               </Button>
             </div>
           </Modal>

@@ -14,9 +14,14 @@ import {
   Typography,
   Popconfirm,
   Pagination,
+  Tag,
+  Space
 } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import "./style.css";
+
+import trash from "../../assets/icons/trash.png";
+import edit from "../../assets/icons/edit.png"
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -105,7 +110,7 @@ const PlanManagement = () => {
     setOpenEdit(true);
   };
 
-  const handlePageChange = async () => {};
+  const handlePageChange = async () => { };
 
   const handleCreateService = async () => {
     setLoading(true);
@@ -228,32 +233,66 @@ const PlanManagement = () => {
     },
     {
       title: "Status",
-      render: (_, record) => <>{record.active ? "Active" : "Deactive"}</>,
+      key: 'status',
+      dataIndex: 'status',
+
+      // render: (_,status) =>
+      // <>{record.active ? "Active" : "Deactive"}</>,
+      // <Tag
+      //   color={status=== "Active" ? "rgba(35, 208, 32, 0.2)" : ""}
+      //   style={{ borderRadius: "20px", color: "rgba(35, 208, 32, 0.2)" }}
+      // >
+      //   <>{status ? "Active" : "Deactive"}</>,
+      //   {/* {Status.toUpperCase()} */}
+      // </Tag>
+      render: (status) => (
+        <Tag color={status === 'Active' ? 'green' : 'volcano'}
+          style={{ borderRadius: "20px", width: '103px', textAlign: 'center' }}
+        >
+          {status ? 'Active' : 'Deactive'}
+        </Tag>
+      )
     },
     {
       title: "Action",
       render: (_, record) => (
+        // <>
+        //   <span
+        //     className="plan_edit"
+        //     onClick={() => {
+        //       handleEditService(record);
+        //     }}
+        //   >
+        //     Edit
+        //   </span>
+        //   <Divider type="vertical" />
+        //   <Popconfirm
+        //     title="Are you sure to delete this plan? "
+        //     description="This Plan may have been used before!"
+        //     onConfirm={() => {
+        //       handleDeleteService(record.id);
+        //     }}
+        //     okText="Yes"
+        //     cancelText="No"
+        //   >
+        //     <span className="plan_delete">Delete</span>
+        //   </Popconfirm>
+        // </>
         <>
-          <span
-            className="plan_edit"
-            onClick={() => {
-              handleEditService(record);
-            }}
-          >
-            Edit
-          </span>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="Are you sure to delete this plan? "
-            description="This Plan may have been used before!"
-            onConfirm={() => {
-              handleDeleteService(record.id);
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <span className="plan_delete">Delete</span>
-          </Popconfirm>
+          <Space size="middle">
+            <Button
+              type="text"
+              icon={<img src={trash} alt="" />}
+              style={{ color: "#979797" }}
+              onClick={() => { handleDeleteService(record.id); }}
+            />
+            <Button
+              type="text"
+              icon={<img src={edit} alt="" />}
+              style={{ color: "#979797" }}
+              onClick={() => { handleEditService(record); }}
+            />
+          </Space>
         </>
       ),
     },
@@ -301,7 +340,7 @@ const PlanManagement = () => {
                 prefix={
                   <ClockCircleOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                name="interval_count" 
+                name="interval_count"
                 onChange={this.handleChangeCreatePlanData}
                 type="text"
                 placeholder="Renewal Period"
@@ -402,12 +441,18 @@ const PlanManagement = () => {
                 justify="space-between"
                 type={"flex"}
               >
-                <Typography.Text strong={true}>Plans</Typography.Text>
-                <Button
+                <Typography.Text className="plan-text" strong={true}>Plans</Typography.Text>
+                {/* <Button
                   onClick={handleAddNewService}
                   className="login-btn create-payment-request-btn newplan_btn"
                 >
                   + New Plan
+                </Button> */}
+                <Button
+                  onClick={handleAddNewService}
+                  className="create-btn"
+                >
+                  Add new Plan
                 </Button>
               </Row>
 
@@ -416,9 +461,8 @@ const PlanManagement = () => {
                 Pagination={false}
                 columns={plansColumns}
                 dataSource={data}
-                pagination={false}
               />
-              <Row type="flex" justify="end" className="mt25">
+              {/* <Row type="flex" justify="end" className="mt25">
                 <Pagination
                   disabled={loading}
                   current={page}
@@ -427,7 +471,7 @@ const PlanManagement = () => {
                   className="paginator"
                   size="small"
                 />
-              </Row>
+              </Row> */}
             </>
           )}
         </div>

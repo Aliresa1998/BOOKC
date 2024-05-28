@@ -8,7 +8,8 @@ import {
     notification,
     Button,
     Modal,
-    Popconfirm
+    Popconfirm,
+    Space
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { controller } from "../../controller";
@@ -16,6 +17,9 @@ import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import "./style.css";
 import CreateAppointment from "./CreateAppointment";
 import EditAppointment from "./EditAppointment";
+
+import edit from '../../assets/icons/edit.png';
+import delete1 from '../../assets/icons/trash.png'
 
 
 function AppointmentType() {
@@ -139,7 +143,7 @@ function AppointmentType() {
             title: 'Action',
             render: (text, record) => (
                 <div>
-                    <span className="edit-text" onClick={() => handleOpenEdit(record)}>Edit</span>
+                    {/* <span className="edit-text" onClick={() => handleOpenEdit(record)}>Edit</span>
                     <Divider type="vertical" />
                     <Popconfirm
                         title="Are you sure to delete this rule?"
@@ -148,7 +152,21 @@ function AppointmentType() {
                         }}
                     >
                         <span className="remove-text" >Remove</span>
-                    </Popconfirm>
+                    </Popconfirm> */}
+                    <Space size="middle">
+                        <Button
+                            type="text"
+                            icon={<img src={delete1} alt="" />}
+                            style={{ color: "#979797" }}
+                            onClick={() => { handleRemove(record) }}
+                        />
+                        <Button
+                            type="text"
+                            icon={<img src={edit} alt="" />}
+                            style={{ color: "#979797" }}
+                            onClick={() => handleOpenEdit(record)}
+                        />
+                    </Space>
 
                 </div>
             ),
@@ -160,39 +178,35 @@ function AppointmentType() {
             logo={""}
             footerLogo={true}
         >
-            <Card
-                className="review_card"
-                bodyStyle={{ padding: "32px 40px" }}
-            >
-                <Row type="flex" justify="space-between">
-                    <Col span={12}>
-                        <p className="check_review">Appointment Type</p>
-                    </Col>
-                    <Col>
-                        <Button
-                            onClick={handleOpenCreateModal}
-                            type="primary"
-                            className="mb16 new-button"
-                        >+ New</Button>
-                    </Col>
-                </Row>
-                <Table pagination={false} dataSource={appointmentTypes} columns={appointmentTypesColumn} />
-                <Row type="flex" justify="end" className="mt15">
-                    <Pagination
-                        current={currentPage}
-                        total={pageSize}
-                        onChange={handlePageChange}
-                        className="paginator"
-                        size="small"
-                    />
-                </Row>
-            </Card>
 
+            <Row type="flex" justify="space-between" style={{ marginTop: 54, width: '96%', marginLeft: 25 }}>
+                <Col span={12}>
+                    <p className="check_review">Appointment Type</p>
+                </Col>
+                <Col>
+                    <Button
+                        onClick={handleOpenCreateModal}
+                        type="primary"
+                        className="mb16 new-button"
+                    >+ New</Button>
+                </Col>
+            </Row>
+            <Table pagination={false} dataSource={appointmentTypes} columns={appointmentTypesColumn} style={{ width: '96%', marginLeft: 25 }} />
+            <Row type="flex" justify="end" className="mt15">
+                <Pagination
+                    current={currentPage}
+                    total={pageSize}
+                    onChange={handlePageChange}
+                    className="paginator"
+                    size="small"
+                />
+            </Row>
             <Modal
                 open={openCreateModal}
                 footer={null}
                 onCancel={handleCloseCreateModal}
                 title={"New Appointment Type"}
+                style={{ maxWidth: 352, display: 'flex', justifyContent: 'center' }}
             >
                 <CreateAppointment open={openCreateModal} closeCreateModal={handleCloseCreateModal} />
             </Modal>

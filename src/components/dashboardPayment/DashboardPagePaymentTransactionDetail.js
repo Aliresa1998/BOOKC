@@ -62,7 +62,7 @@ const DashboardPagePaymentTransactionDetail = (props) => {
   return (
     <div className='main_container_card fullWidth100p' style={{ justifyContent: "center" }}>
       <div className='fullWidth100p'>
-      <Table columns={columns} dataSource={data} />  
+      <Table columns={columns} dataSource={data} pagination={false} />  
         <Row type='flex' justify='end' className='mt15'>
           <Pagination
             showSizeChanger={false}

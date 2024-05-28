@@ -14,8 +14,8 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import React, { Component } from "react";
-import { connect } from "react-redux"; 
-import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout"; 
+import { connect } from "react-redux";
+import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import { controller } from "../../controller";
 import { Controller } from "./Controller/Controller";
 import moment from "moment";
@@ -192,14 +192,14 @@ class Visit extends Component {
         key: i,
         fullname:
           response.json.results[i] &&
-          response.json.results[i].member_info &&
-          response.json.results[i].member_info.first_name ? (
+            response.json.results[i].member_info &&
+            response.json.results[i].member_info.first_name ? (
             <>
               <Avatar
                 src={
                   response.json.results[i] &&
-                  response.json.results[i].member_info &&
-                  response.json.results[i].member_info.profile_picture
+                    response.json.results[i].member_info &&
+                    response.json.results[i].member_info.profile_picture
                     ? response.json.results[i].member_info.profile_picture
                     : ""
                 }
@@ -224,8 +224,8 @@ class Visit extends Component {
         date:
           response.json.results[i] && response.json.results[i].date
             ? new Date(response.json.results[i].date).toLocaleDateString() +
-              " " +
-              new Date(response.json.results[i].date).toLocaleTimeString()
+            " " +
+            new Date(response.json.results[i].date).toLocaleTimeString()
             : "-",
       });
     }
@@ -310,9 +310,9 @@ class Visit extends Component {
     });
   };
 
-  onOkDate = (value) => {};
+  onOkDate = (value) => { };
 
-  onChangeDate = (value, dateString) => {};
+  onChangeDate = (value, dateString) => { };
 
   handleChange(e) {
     const { name, value } = e.target;
@@ -339,38 +339,144 @@ class Visit extends Component {
       breadCrumb={'Visit'}
       logo={profileSummary && profileSummary.logo ? profileSummary.logo : ""}
       footerLogo={true}
-    >   
-                <div className="paymentRequestContent ">  
-                  <Row type="flex" justify="space-between">
-                    <div></div>
-                    <div>
-                      <Button
-                        className="login-btn create-payment-request-btn mb15"
-                        onClick={this.handleOpenVisitModal}
-                        type="primary" size="large"
-                      >
-                        New Visit
-                      </Button>
-                    </div>
-                  </Row>
-                  <div className="visit_mt15">
-                    <Table
-                      columns={PlanColumn}
-                      dataSource={this.state.visitRow}
-                    />
-                  </div>
-                </div> 
-        <Modal
-          title="Add Visit"
-          visible={this.state.visibleVisit}
-          footer={null}
-          onCancel={() => {
+    >
+      <div className="paymentRequestContent ">
+        <Row type="flex" justify="space-between" className="flex-visit">
+          <div className="visit-font">
+            Visit
+          </div>
+          <div>
+            <Button
+              className="create-btn"
+              onClick={this.handleOpenVisitModal}
+              type="primary" size="large"
+            >
+              Add Visit
+            </Button>
+          </div>
+        </Row>
+        <div className="visit_mt15">
+          <Table
+            columns={PlanColumn}
+            dataSource={this.state.visitRow}
+          />
+        </div>
+      </div>
+      <Modal
+        style={{ minWidth: 568 }}
+        title="Add Visit"
+        visible={this.state.visibleVisit}
+        footer={null}
+        onCancel={() => {
+          this.setState({
+            visibleVisit: false,
+          });
+        }}
+      >
+        <div className="flex-roww">
+          <div>
+            <label className="formLabel">Member</label>
+            <Select
+              showSearch
+              style={{ width: 290, height: 39 }}
+              className="w100pp"
+              placeholder="search Member"
+              optionFilterProp="children"
+              onChange={(e, value) => {
+                this.handleSelectMemberInModal(e);
+              }}
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {this.state.membersList ? (
+                this.state.membersList.map((member0) => (
+                  <Option value={member0.id}>
+                    {member0.first_name + " " + member0.last_name}
+                  </Option>
+                ))
+              ) : (
+                <></>
+              )}
+              {this.state.membersList.map((member0) => (
+                <Option value={member0.id}>
+                  {member0.first_name + " " + member0.last_name}
+                </Option>
+              ))}
+            </Select>
+
+          </div>
+          <div className="margin-l">
+            <label className="margin-bt">Cost</label>
+            <InputNumber
+              className="cost-input"
+              // value={createsService.cost}
+              name="cost"
+              defaultValue={0}
+              formatter={(value) =>
+                `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+            // className="w100p"
+            // onChange={(e, value) => {
+            //   setCreatesService({
+            //     ...createsService,
+            //     cost: e,
+            //   });
+            // }}
+            />
+          </div>
+        </div>
+
+        <label className="formLabel">MemberShip</label>
+        <Select
+          showSearch
+          style={{ width: 290, height: 39 }}
+          className="w100pp"
+          placeholder="search MemberShip"
+          optionFilterProp="children"
+          onChange={(e, value) => {
+            this.handleSelectMembership(e);
             this.setState({
-              visibleVisit: false,
+              VisitData: {
+                ...this.state.VisitData,
+                membership: e,
+              },
             });
           }}
+          filterOption={(input, option) =>
+            option.props.children
+              .toLowerCase()
+              .indexOf(input.toLowerCase()) >= 0
+          }
         >
-          <label className="formLabel">Member</label>
+          {this.state.membershipsOfMember ? (
+            this.state.membershipsOfMember.map((member0) => (
+              <Option value={member0.id}>{member0.plan_name}</Option>
+            ))
+          ) : (
+            <></>
+          )}
+          {this.state.membershipsOfMember.map((member0) => (
+            <Option value={member0.id}>{member0.plan_name}</Option>
+          ))}
+        </Select>
+         <br />
+         <div className="btnBox services_close" style={{marginTop: 92}}>
+        <Button
+          onClick={this.createServiceUsage}
+          type="primary"
+          className="service_create"
+        >
+          Create
+        </Button>
+        </div>
+
+
+
+        {/* <label className="formLabel">Member</label>
           <Select
             showSearch
             className="w100p"
@@ -385,7 +491,7 @@ class Visit extends Component {
                 .indexOf(input.toLowerCase()) >= 0
             }
           >
-            {this.state.membersList ? (
+             {this.state.membersList ? (
               this.state.membersList.map((member0) => (
                 <Option value={member0.id}>
                   {member0.first_name + " " + member0.last_name}
@@ -394,9 +500,14 @@ class Visit extends Component {
             ) : (
               <></>
             )}
-          </Select>
+            {this.state.membersList.map((member0) => (
+                <Option value={member0.id}>
+                  {member0.first_name + " " + member0.last_name}
+                </Option>
+              ))}
+          </Select> */}
 
-          {this.state.selectedMemberInModal ? (
+        {/* {this.state.selectedMemberInModal ? (
             <>
               <label className="formLabel">MemberShip</label>
               <Select
@@ -418,17 +529,20 @@ class Visit extends Component {
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
-              >
-                {this.state.membershipsOfMember ? (
+              >  */}
+        {/* {this.state.membershipsOfMember ? (
                   this.state.membershipsOfMember.map((member0) => (
                     <Option value={member0.id}>{member0.plan_name}</Option>
                   ))
                 ) : (
                   <></>
-                )}
+                )} */}
+        {/* {this.state.membershipsOfMember.map((member0) => (
+                    <Option value={member0.id}>{member0.plan_name}</Option>
+                  ))}
               </Select>
-              <br />
-              {this.state.selectedMemberShipInModal ? (
+              <br /> */}
+        {/* {this.state.selectedMemberShipInModal ? (
                 <>
                   <label className="formLabel">Service</label>
                   <Select
@@ -539,9 +653,9 @@ class Visit extends Component {
                 </Button>
               </div>
             </>
-          )}
-        </Modal>
-            </DashboardLayout>  
+          )} */}
+      </Modal>
+    </DashboardLayout>
     );
   }
 }
