@@ -4,9 +4,7 @@ import { push } from "react-router-redux";
 import { withRouter } from "react-router-dom";
 import { debounce } from "lodash";
 import { dashboardActions } from "../../actions";
-import { Pagination, Row, Table } from "antd";
-import { notification, Menu, Dropdown, Modal, Input, Button } from "antd";
-import { EyeOutlined, RedoOutlined, DownOutlined } from "@ant-design/icons";
+import { Pagination, Table, Card, Space, Tag, notification, Menu, Modal, Input, Button, message } from "antd";
 import "../app.local.css";
 import { ReactComponent as Spinner } from "../../assets/img/loading-spinner.svg";
 import Axios from "axios";
@@ -16,6 +14,17 @@ import { controller } from "../../controller";
 import DashboardLayout from "../../layout/dashboardLayout/DashboardLayout";
 import "./style.css";
 import DashboardPagePaymentDetail from "./DashboardPagePaymentDetail";
+import PaymentFirstPage from '../Payment/PaymentFirstPage';
+import PaymentDone from '../Payment/PaymentDone'
+import { Paymentcontroller } from "../../Paymentcontroller";
+//ICONS
+import sent from "../../assets/icons/card-send.png";
+import receive from "../../assets/icons/card-receive.png";
+import search from '../../assets/icons/search-normal.png';
+import eye from '../../assets/icons/eye.png';
+import refresh from '../../assets/icons/refresh.png';
+import card from '../../assets/icons/card-pos.png';
+
 const Config = {
   headers: {
     Authorization: localStorage.getItem("user")
@@ -60,9 +69,6 @@ class PaymentRequestsTable extends Component {
     super(props);
     this.getLogo();
     this.state = {
-      loadingCancelPayReq: false,
-      openCancelPayReq: false,
-      idPayReqForCancel: null,
       errorMessage: "",
       serverLogo: "",
       paymentRequests: [],
@@ -71,7 +77,12 @@ class PaymentRequestsTable extends Component {
       search_term: "",
       totalAr: "",
       loading_update: false,
+      openPayModal: false,
       openDetailModal: false,
+      currentStep: sessionStorage.getItem('currentStep') || 1,  // Retrieve the step from session storage or default to 1
+      isChecked: false,
+      selectedPaymentId: null,
+      paymentType: null
     };
     this.getLogo();
     this.getLogo = this.getLogo.bind(this);
@@ -88,8 +99,97 @@ class PaymentRequestsTable extends Component {
     show_more: {},
     loading_update: false,
     openDetailModal: false,
-    selectediD: 0,
+    detailModalVisible: false,
+    selectedPayment: [],
+
   };
+
+  handleReadDataIP = async () => {
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const userIp0 = ipData.ip;
+      return userIp0.ip
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+    return null;
+  };
+
+  handleApprovedCardByHelcim = async (cardToken) => {
+    var id = localStorage.getItem('paymentId');
+    if (!id) {
+      console.error("No selected ID provided");
+      message.error("Payment failed: No selected ID provided.");
+      return;
+    }
+
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const userIp = ipData.ip;
+
+      const response = await Paymentcontroller.helcimPay(id, cardToken, userIp);
+
+      if (response.status < 250) {
+        message.success("Payment successful");
+        window.history.pushState({}, '', `/payment/${id}`);  // Update the URL without reloading the page
+      } else {
+        message.error("Payment failed: " + response.error);
+      }
+    } catch (error) {
+      console.error('Error during payment processing:', error);
+      message.error("Payment processing error: " + error.message);
+    }
+  };
+
+  // check submited helcim form
+  componentDidMount() {
+
+    // Function to parse URL parameters
+    const getUrlParameter = (name, url = window.location.href) => {
+      if (!url) return '';
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)|(?:#)' + name + '=([^#]*)');
+      const results = regex.exec(url);
+      return results === null ? '' : (results[1] !== undefined ? decodeURIComponent(results[1].replace(/\+/g, ' ')) : decodeURIComponent(results[2].replace(/\+/g, ' ')));
+    };
+
+    // Get the value of responseMessage and cardToken from URL parameters
+    const responseMessage = getUrlParameter('responseMessage');
+    const cardToken = getUrlParameter('cardToken');
+
+    // Check if responseMessage is "APPROVED" and log cardToken
+    if (responseMessage === 'APPROVED' || responseMessage === 'APPROVAL' ||
+      (window.location.href.includes("/?") && !window.location.href.includes("/?id="))
+    ) {
+      console.log(cardToken)
+      const userIp = this.handleReadDataIP()
+      this.setState({ currentStep: 3, detailModalVisible: true });
+      this.handleApprovedCardByHelcim(cardToken)
+      console.log('user ip:', userIp);
+      console.log('Card Token:', cardToken);
+    } else {
+      // this.setState({
+      //   loadingHelcimResultCheck: false
+      // })
+    }
+  }
+
+  // processUrlParameters = () => {
+  //   const params = new URLSearchParams(window.location.search);
+  //   const responseMessage = params.get('responseMessage');
+  //   const cardToken = params.get('cardToken');
+
+  //   if (responseMessage === 'APPROVED') {
+  //     // Assuming step 3 is the confirmation step
+  //     this.setState({ currentStep: 3, detailModalVisible: true });
+  //     sessionStorage.setItem('currentStep', '3');  // Persist step change across refreshes
+  //   }
+
+  //   // Clean up URL parameters to prevent reprocessing
+  //   // window.history.replaceState({}, '', window.location.pathname);
+  // };
 
   openNotification = (placement, message, status) => {
     if (status && status.toLowerCase().search("success") != -1) {
@@ -162,9 +262,6 @@ class PaymentRequestsTable extends Component {
 
 
   handleCancel = async (id) => {
-    this.setState({
-      loadingCancelPayReq: true
-    })
     const response = await controller.cancelPayment(id);
     if (response.status < 250) {
       this.openNotification(
@@ -174,9 +271,6 @@ class PaymentRequestsTable extends Component {
           : "Done",
         "Successful"
       );
-      this.setState({
-        openCancelPayReq: false
-      })
       this.updateRequestList();
     } else {
       this.openNotification(
@@ -185,9 +279,6 @@ class PaymentRequestsTable extends Component {
         "Error"
       );
     }
-    this.setState({
-      loadingCancelPayReq: false
-    })
   };
 
   handlePaginatorChange = (page, page_size) => {
@@ -203,24 +294,45 @@ class PaymentRequestsTable extends Component {
     );
   };
 
+  handlePaymentButtonClick1 = (record) => {
+    if (record.status === "pending") {
+      this.setState({
+        detailModalVisible: true,
+        selectedPayment: record,
+      });
+      sessionStorage.setItem('currentStep', '1');  // Start from step 1 when opening the modal
+
+    }
+  };
+
+  onPaymentTypeSelected = (paymentType) => {
+    this.setState({
+      paymentType,
+      currentStep: 2
+    });
+  };
+
+
+  handleNextStep = () => {
+    this.setState(prevState => ({
+      currentStep: Number(prevState.currentStep) + 1
+    }), () => {
+      sessionStorage.setItem('currentStep', this.state.currentStep.toString());  // Persist step change
+    });
+  };
+
+
   render() {
+    const { currentStep } = this.state;
+    const { detailModalVisible, selectedPayment } = this.state;
     const statusDropDown = (payreq_id) => (
-      <>
-        <Menu
-          onClick={(e) => {
-
-            this.setState({
-              openCancelPayReq: true,
-              idPayReqForCancel: payreq_id
-            })
-            //this.handleCancel(payreq_id);
-          }}
-        >
-          <Menu.Item>Cancel Request</Menu.Item>
-        </Menu>
-
-      </>
-
+      <Menu
+        onClick={(e) => {
+          this.handleCancel(payreq_id);
+        }}
+      >
+        <Menu.Item>Cancel Request</Menu.Item>
+      </Menu>
     );
     const moreReasonBtn = (payreq_id) => (
       <button
@@ -235,6 +347,33 @@ class PaymentRequestsTable extends Component {
         more
       </button>
     );
+
+
+
+    const handlePaymentButtonClick1 = (record) => {
+      if (record.status === "pending") {
+        this.setState({
+          detailModalVisible: true,
+          selectedPayment: record,
+        });
+        sessionStorage.setItem('currentStep', '1');  // Start from step 1 when opening the modal
+
+      }
+    };
+
+
+
+    const handleCloseDetailModal1 = () => {
+
+      this.setState({
+        detailModalVisible: false,
+        selectedPayment: [],
+        currentStep: 1
+      })
+      sessionStorage.removeItem('currentStep');  // Clear the step from session storage on modal close
+
+    };
+
 
     const columns = [
       {
@@ -303,27 +442,34 @@ class PaymentRequestsTable extends Component {
             {record.status == "canceled" ? (
               <span className="cr">Cancelled</span>
             ) : record.status == "subscription" ? (
-              <Dropdown overlay={statusDropDown(record.id)}>
-                <span className="cg">
-                  Active <DownOutlined />
-                </span>
-              </Dropdown>
-            ) : record.status == "pending" ? (
-              <>
-                <Dropdown overlay={statusDropDown(record.id)}>
-                  <span className="pending">
-                    Pending <DownOutlined />
-                  </span>
-                </Dropdown>
-              </>
-            ) : record.status == "completed" ? (
-              <span className="cg">Completed</span>
-            ) : record.status == "failed" ? (
-              <Dropdown overlay={statusDropDown(record.id)}>
-                <span className="cr">
-                  Failed <DownOutlined />
-                </span>
-              </Dropdown>
+              <Tag
+                color={"rgba(37, 180, 248, 0.12)"}
+                style={{ borderRadius: "500px", fontSize: '12px', color: "#5191FF", width: 85, height: 22, textAlign: 'center' }}
+              >
+                Active
+              </Tag>
+            ) : record.status === "pending" ? (
+              <Tag
+                color={"rgba(236, 148, 44, 0.15)"}
+                style={{ borderRadius: "500px", fontSize: '12px', color: "rgba(236, 148, 44, 1)", width: 85, height: 22, textAlign: 'center' }}
+              >
+                Pending
+              </Tag>
+            ) : record.status === "completed" ? (
+              <Tag
+                color={"rgba(4, 201, 0, 0.1)"}
+                style={{ borderRadius: "500px", fontSize: '12px', color: "rgba(4, 201, 0, 1)", width: 85, height: 22, textAlign: 'center' }}
+              >
+                Completed
+              </Tag>
+            ) : record.status === "failed" ? (
+
+              <Tag
+                color={"rgba(255, 0, 0, 0.08)"}
+                style={{ borderRadius: "500px", fontSize: '12px', color: "rgba(238, 97, 91, 1)", width: 85, height: 22, textAlign: 'center' }}
+              >
+                Failed
+              </Tag>
             ) : (
               ""
             )}
@@ -331,81 +477,58 @@ class PaymentRequestsTable extends Component {
         ),
       },
       {
-        title: "Resend",
-        render: (_, record) => (
-          <>
-            <button className="resend-btn">
-              <RedoOutlined />
-            </button>
-          </>
-        ),
-      },
-      {
-        title: "Details",
-        render: (_, record) => (
-          <>
-            <EyeOutlined
-              style={{
-                fontSize: "18px",
-                color: "black",
-                cursor: "pointer",
-              }}
+        title: "Action",
+        key: "action",
+        render: (text, record) => (
+          <Space size="middle">
+            <Button
+              type="text"
+              icon={<img src={eye} alt="" />}
+              style={{ color: "#979797" }}
               onClick={() => {
                 this.OpenDetailPaymentModal(record);
               }}
             />
-          </>
-        ),
-      },
-      {
-        title: "Pay",
-        render: (_, record) => (
-          <>
-            {record.status == "pending" ? (
-              <a
-                target="_blank"
-                href={window.location.origin + "/#/payment/" + record.id}
-              >
-                Payment
-              </a>
-            ) : (
-              <p className="placeholder-color">Payment</p>
-            )}
-          </>
+            <Button
+              type="text"
+              icon={<img src={card} alt="" />}
+              style={{ color: "#979797" }}
+              onClick={() => handlePaymentButtonClick1(record)}
+            />
+            <Button
+              type="text"
+              icon={<img src={refresh} alt="" />}
+              style={{ color: "#979797" }}
+            />
+          </Space>
         ),
       },
     ];
     return (
       <>
         <Modal
-          onCancel={() => {
-            this.setState({
-              openCancelPayReq: false
-            })
-          }}
-          open={this.state.openCancelPayReq}
-          footer={null}
-          title="Cancel payment request"
+          visible={detailModalVisible}
+          title="Payment Details"
+          onCancel={() => handleCloseDetailModal1()}
+          footer={null}  // This line ensures no footer (and thus no buttons) is displayed
+          style={{ minWidth: 538 }}
         >
-          <p>
-            Are you sure you want to cancel this payment request?
-          </p>
-          <Row justify={"end"}>
-            <Button
-              type="primary"
-              onClick={() => {
-                this.setState({
-                  openCancelPayReq: false
-                })
-              }}
-              style={{ marginRight: "10px" }}>No</Button>
-            <Button loading={this.state.loadingCancelPayReq} onClick={() => { this.handleCancel(this.state.idPayReqForCancel) }}> Yes</Button>
-          </Row>
+          {selectedPayment && currentStep === 1 ? (
+            <>
+              <PaymentFirstPage onNextStep={this.handleNextStep} selectediD={selectedPayment.id} onPaymentTypeSelected={this.onPaymentTypeSelected} />
+            </>
+          ) : null}
+          {selectedPayment && currentStep === 3 ? (
+            <>
+              <PaymentDone onNextStep={this.handleNextStep} selectediD={selectedPayment.id} />
+            </>
+          ) : null}
         </Modal>
         <Modal
-          className="mwf"
+          style={{ minWidth: 538 }}
+          // className="mwf"
           visible={this.state.openDetailModal}
-          title="Plan Details"
+          title="Details"
           onCancel={() => {
             this.setState({
               openDetailModal: false,
@@ -427,6 +550,10 @@ class PaymentRequestsTable extends Component {
           size="small"
         />
         <Table
+          style={{
+            border: "1px solid rgba(240, 240, 240, 1)", borderRadius: '8px', boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.15)"
+
+          }}
           columns={columns}
           dataSource={
             this.state.paymentRequests.results
@@ -487,7 +614,7 @@ class DashboardPage extends Component {
     this.getLogo = this.getLogo.bind(this);
     this.props.dispatch(dashboardActions.fetchProfileSummary());
     this.props.dispatch(dashboardActions.fetchSummary());
-
+    // this.handleReadDataIP = this.handleReadDataIP.bind(this);
     this.updateRequestList();
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
@@ -584,97 +711,64 @@ class DashboardPage extends Component {
             <div className="breadcrumb-part">Payment Management</div>
           </div>
           <div className="paymentContent">
-            <div className="payment_content-container">
-              {this.state.width > 440 ? (
-                <div className="payment_content-totalBox">
-                  <div className="totalBox">
-                    <div className="row">
-                      <div className="summary-line">
-                        <span>Sent</span>
-                        <span className="total">
-                          {profileSummary &&
-                            profileSummary.total &&
-                            profileSummary.total != "no data"
-                            ? profileSummary.total.toLocaleString()
-                            : 0}
-                        </span>
-                      </div>
-                      <span className="totalSeparator"> | </span>
-                      <div className="summary-line">
-                        <span>Received</span>
-                        <span className="paid">
-                          {profileSummary &&
-                            profileSummary.total_paid &&
-                            profileSummary.total_paid != "no data"
-                            ? profileSummary.total_paid.toLocaleString()
-                            : 0}
-                        </span>
-                      </div>
+            <Card style={{ width: '100%' }}>
+              <div className="flex-row-evenlyy">
+                <div style={{ width: 368, height: 121, display: 'flex', alignItems: 'center', flexDirection: 'row', background: 'rgba(223, 218, 255, 0.7)', borderRadius: '8px' }}>
+                  <div className='circle' style={{ marginLeft: 15 }}>
+                    <img className='icon-center' src={sent} alt='' />
+                  </div>
+                  <div style={{ marginLeft: 10 }}>
+                    <div style={{ fontSize: 18, fontWeight: 400, color: '#4D3280' }}>Sent</div>
+                    <div style={{ fontSize: 24, color: "#5D3B9C", fontWeight: 400, }}>
+                      {profileSummary &&
+                        profileSummary.total &&
+                        profileSummary.total !== "no data"
+                        ? profileSummary.total.toLocaleString()
+                        : 0
+                      }
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="w100p">
-                  <div className="payment_content-totalBox">
-                    <div className="totalBox">
-                      <div>
-                        <div className="summary-line seny">
-                          <span>Sent</span>
-                          <span className="total mla">
-                            $
-                            {profileSummary &&
-                              profileSummary.total &&
-                              profileSummary.total != "no data"
-                              ? profileSummary.total.toLocaleString()
-                              : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                <div style={{ width: 368, height: 121, display: 'flex', alignItems: 'center', flexDirection: 'row', background: 'rgba(223, 218, 255, 0.7)', borderRadius: '8px' }}>
+                  <div className='circle' style={{ marginLeft: 15 }}>
+                    <img className='icon-center' src={receive} alt='' />
                   </div>
-                  <div className="payment_content-totalBox">
-                    <div className="totalBox">
-                      <div>
-                        <div className="summary-line sent">
-                          <span>Received</span>
-                          <span className="paid mla">
-                            $
-                            {profileSummary &&
-                              profileSummary.total_paid &&
-                              profileSummary.total_paid != "no data"
-                              ? profileSummary.total_paid.toLocaleString()
-                              : 0}
-                          </span>
-                        </div>
-                      </div>
+                  <div style={{ marginLeft: 10 }}>
+                    <div style={{ fontSize: 18, fontWeight: 400, color: '#5D3B9C' }}>Received</div>
+                    <div style={{ fontSize: 24, color: "#5D3B9C", fontWeight: 400, }}>
+                      {profileSummary &&
+                        profileSummary.total_paid &&
+                        profileSummary.total_paid !== "no data"
+                        ? profileSummary.total_paid.toLocaleString()
+                        : 0}
                     </div>
                   </div>
                 </div>
-              )}
-              <div className="payment_content-totalBox mw430">
-                <Search
-                  name="search_term"
-                  placeholder="Search by patient or appointment"
-                  onChange={(e) => this.handleSearchChange(e)}
-                  style={{ minHeight: "45px" }}
-                  className="searchBox"
-                  value={this.state.search_term}
-                />
+                <div style={{ maxWidth: 368 }} >
+                  <Input
+                    value={this.state.search_term}
+                    onChange={(e) => this.handleSearchChange(e)}
+                    size="large"
+                    placeholder="Search patient/payment"
+                    suffix={<img src={search} alt="" />}
+                    style={{ marginBottom: '20px', height: 52 }}
+                  />
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    style={{ height: 52 }}
+                    onClick={this.goToCreatePaymentRequest}
+                  >
+                    Send Payment Request
+                  </Button>
+                </div>
               </div>
-              <div className="send_btn">
-                <Button
-                  className="login-btn create-payment-request-btn cw"
-                  onClick={this.goToCreatePaymentRequest}
-                  size="large"
-                >
-                  Send Payment Request
-                </Button>
-              </div>
-            </div>
+            </Card>
             <div className="loading-spinner">
               <Spinner />
             </div>
-            <div className="requests">
+            <div style={{ marginTop: 30 }}>
               {
                 <div>
                   <PaymentRequestsTable
@@ -687,8 +781,6 @@ class DashboardPage extends Component {
             </div>
           </div>
         </div>
-
-
       </DashboardLayout>
     );
   }

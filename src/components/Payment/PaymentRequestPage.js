@@ -1,4 +1,4 @@
-import { Row, Button, DatePicker, Input, Modal, Radio, Select, Spin, notification, message } from 'antd'
+import { Row, Button, DatePicker, Input, Modal, Radio, Select, Spin, notification, message, Card, Col, Typography } from 'antd'
 import { QuestionCircleOutlined, DollarOutlined, CloudUploadOutlined, CloseOutlined, UserOutlined, EnvironmentOutlined, HomeOutlined, MailOutlined } from "@ant-design/icons";
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
@@ -12,8 +12,18 @@ import PayByAdmin from "./PayByAdmin"
 import "./style.css"
 import { Paymentcontroller } from '../../Paymentcontroller';
 
+
+//Icons
+import add2 from '../../assets/icons/add-circle2.png';
+import export1 from '../../assets/icons/export1.png';
+import calendar from '../../assets/icons/calendar.png';
+import arrow from '../../assets/icons/arrow-left.png';
+
+
+
 const { TextArea } = Input;
 const { Option } = Select;
+const { Title } = Typography
 
 class PaymentRequestPage extends Component {
 
@@ -1076,7 +1086,7 @@ class PaymentRequestPage extends Component {
           logo={(profileSummary && profileSummary.logo) ? profileSummary.logo : ''}
           footerLogo={true}
         >
-          <div className="paymentRequestContent">
+          <div >
             <div className="payreq-container">
               {
                 this.state.payStateAdmin == true ?
@@ -1086,564 +1096,664 @@ class PaymentRequestPage extends Component {
                   </div>
                   :
 
-                  <div className="content-payreq">
+                  <div>
 
 
                     {this.state.submitted && !creating && error && error.message &&
                       <div className="alert">{error.message}</div>
                     }
-
-                    <label className='formLabel'>Type of payment</label>
-                    <div style={{ display: 'flex', flexDirection: 'row', width: '450px' }}>
-                      <Radio.Group buttonStyle='solid' className='radio-button-group-payreq' size="large" value={this.state.payByAdmin} onChange={this.handleChangePaymentTypeAdmin}>
-                        <Radio.Button className='radiobutton-payreq' value={"true"} >
-                          <span style={{ color: this.state.payByAdmin == "true" ? "#FFF " : "" }}>
-                            In-office Payment
-                          </span>
-                        </Radio.Button>
-
-                        <Radio.Button className='radiobutton-payreq' value={"false"} >
-                          <span style={{ color: this.state.payByAdmin == "false" ? "#FFF " : "" }}>
-                            Email/Text Payment
-                          </span>
-                        </Radio.Button>
-                      </Radio.Group>
-                    </div>
-
-                    <label className='formLabel'>Patient</label>
-                    <div style={{ display: "flex" }}>
-                      {
-                        window.location.href.split("?id=")[1] ?
-
-                          "(" + localStorage.getItem("guarantor.id") + ") " + localStorage.getItem("gurantor.name")
-                          :
-                          <>
-                            <Select
-                              showSearch
-                              className={this.state.formErrorsPayReq &&
-                                this.state.formErrorsPayReq.SelectPatient &&
-                                this.state.formErrorsPayReq.SelectPatient.status ? "inputs" : "inputs-error"}
-                              value={this.state.newPatientID ? this.state.newPatientID : undefined}
-                              onSearch={(event) => this.handleSearchPatient(event)}
-                              mode="single"
-                              style={{ width: '100%', height: "fit-content" }}
-                              placeholder="Patient"
-                              filterOption={(input, option) =>
-                                option.props.children
-                              }
-                              onChange={(event) => this.handleChangeSelectPatient(event)}
-                            >
-                              {
-                                this.state.loadingPatient ?
-                                  <Option key="loading...">Loading <Spin /></Option>
-                                  :
-                                  this.state.patient_information && this.state.patient_information.length > 0 ?
-                                    this.state.patient_information.length > 50 ?
-                                      this.state.patient_information.slice(0, 50).map((patient) =>
-                                        <Option value={patient.id + ""} key={patient.id}>
-                                          {"(" + patient.id + ") " + patient.firstname + " " + patient.lastname}
-                                        </Option>
-                                      )
-                                      :
-                                      this.state.patient_information.map((patient) =>
-                                        <Option value={patient.id + ""} key={patient.id}>
-                                          {"(" + patient.id + ") " + patient.firstname + " " + patient.lastname}
-                                        </Option>
-                                      )
-                                    :
-                                    <Option disabled key={-2}>empty</Option>
-                              }
-                            </Select>
-
-                            <Button
-                              className='login-btn'
-                              onClick={
-                                () => this.handleShowModalAddPatient()}
-                              style={
-                                {
-                                  marginLeft: "5px",
-                                  backgroundColor: "#47a1b0",
-                                  border: "0px"
-                                }}
-                              type='primary'
-                            >
-                              Add Patient
-                            </Button>
-                          </>
-                      }
+                    <Title level={3} style={{ marginBottom: 25, marginLeft: 32 }}>Payment Request</Title>
+                    <Card className='card-provider1'>
+                      <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'center', }}>
+                        <Row type="flex" justify="center">
+                          <Card className='circle-card1'>
+                            <Radio.Group buttonStyle='solid' className='radio-gp' size="medium" value={this.state.payByAdmin} onChange={this.handleChangePaymentTypeAdmin}>
+                              <Radio.Button className='radio-gp12' value={"true"} >
+                                <span style={{ color: this.state.payByAdmin === "true" ? "#FFF " : "" }}>
+                                  In-office Payment
+                                </span>
+                              </Radio.Button>
+                              <Radio.Button className='radio-gp12' value={"false"} >
+                                <span style={{ color: this.state.payByAdmin === "false" ? "#FFF " : "" }}>
+                                  Email/Text Payment
+                                </span>
+                              </Radio.Button>
 
 
-                    </div>
+                            </Radio.Group>
+                          </Card>
+                        </Row>
+                      </div>
+                      <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 40 }} >
+                        <Col span={15}>
+                          <label className='formLabel'>Patient</label>
+                          <div style={{ display: "flex" }}>
+                            {
+                              window.location.href.split("?id=")[1] ?
 
-                    {
-                      this.state.formErrorsPayReq && this.state.formErrorsPayReq.SelectPatient &&
-                        this.state.formErrorsPayReq.SelectPatient.status ?
-                        <></>
-                        :
-                        <div className='error-text'>
-                          {this.state.formErrorsPayReq.SelectPatient.massage}
-                        </div>
-                    }
-                    <label className='formLabel'>Reason</label>
-                    <div style={{ marginBottom: '10px' }}>
+                                "(" + localStorage.getItem("guarantor.id") + ") " + localStorage.getItem("gurantor.name")
+                                :
+                                <>
+                                  <Select
+                                    suffixIcon={<img src={arrow} alt="" />}
+                                    style={{ width: 320, height: 42, borderRadius: '7px', border: '1px solid #6B43B5' }}
+                                    showSearch
+                                    className={this.state.formErrorsPayReq &&
+                                      this.state.formErrorsPayReq.SelectPatient &&
+                                      this.state.formErrorsPayReq.SelectPatient.status ? "inputs" : "inputs-error"}
+                                    value={this.state.newPatientID ? this.state.newPatientID : undefined}
+                                    onSearch={(event) => this.handleSearchPatient(event)}
+                                    mode="single"
+                                    placeholder="Select Patient"
+                                    filterOption={(input, option) =>
+                                      option.props.children
+                                    }
+                                    onChange={(event) => this.handleChangeSelectPatient(event)}
+                                  >
+                                    {
+                                      this.state.loadingPatient ?
+                                        <Option key="loading...">Loading <Spin /></Option>
+                                        :
+                                        this.state.patient_information && this.state.patient_information.length > 0 ?
+                                          this.state.patient_information.length > 50 ?
+                                            this.state.patient_information.slice(0, 50).map((patient) =>
+                                              <Option value={patient.id + ""} key={patient.id}>
+                                                {"(" + patient.id + ") " + patient.firstname + " " + patient.lastname}
+                                              </Option>
+                                            )
+                                            :
+                                            this.state.patient_information.map((patient) =>
+                                              <Option value={patient.id + ""} key={patient.id}>
+                                                {"(" + patient.id + ") " + patient.firstname + " " + patient.lastname}
+                                              </Option>
+                                            )
+                                          :
+                                          <Option disabled key={-2}>empty</Option>
+                                    }
+                                  </Select>
+                                  <Button
+                                    type="link"
+                                    onClick={
+                                      () => this.handleShowModalAddPatient()}
+                                  >
+                                    <span className="size-16">Add</span>
+                                    <img src={add2} alt="" style={{ marginLeft: '8px' }} />
+                                  </Button>
+                                </>
+                            }
 
-                      <Select
-                        mode={this.state.showReasonTextBox ? "single" : "multiple"}
-                        style={{ width: '100%' }}
-                        placeholder="Select Reasons"
-                        name="intervals"
-                        value={!this.state.showReasonTextBox ? this.state.reason : "Other"}
-                        onChange={(e) => {
-                          if (e && e.length > 0 && e.lastIndexOf("Other") != -1) {
-                            this.setState({
-                              showReasonTextBox: true,
-                              reason: []
-                            })
-                          } else {
-                            this.setState({
-                              reason: e,
-                              other_reason: "",
-                              showReasonTextBox: false
-                            })
+
+                          </div>
+
+                          {
+                            this.state.formErrorsPayReq && this.state.formErrorsPayReq.SelectPatient &&
+                              this.state.formErrorsPayReq.SelectPatient.status ?
+                              <></>
+                              :
+                              <div className='error-text'>
+                                {this.state.formErrorsPayReq.SelectPatient.massage}
+                              </div>
                           }
-
-                        }}
-                        optionLabelProp="label"
-                      >
-                        {
-                          this.state.reasons.map((reason) => (
-                            <Option value={reason.id} label={reason.reason}>
-                              {reason.reason}
-                            </Option>
-                          ))
-                        }
-                        <Option value={"Other"} label={"Other"}>
-                          Other
-                        </Option>
-
-                      </Select>
-                    </div>
-                    {
-                      this.state.showReasonTextBox ?
-                        <div className="formInputs">
-                          <TextArea
-                            rows={4}
-                            onChange={this.handleChange}
-                            name="other_reason"
-                            type="text"
-                            placeholder="Reason for appointment"
-                            value={this.state.other_reason}
-                            prefix={<QuestionCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                          />
-                        </div>
-                        :
-                        <></>
-                    }
-
-
-
-
-
-                    {
-                      this.state.payByAdmin == "false" && (
-                        <>
-
-
-                          <label className='formLabel'>Payment Options</label>
+                        </Col>
+                      </Row>
+                      <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 40 }} >
+                        <Col span={8}>
+                          <label className='formLabel'>Reason</label>
                           <div style={{ marginBottom: '10px' }}>
-                            <Select
-                              mode="multiple"
-                              style={{ width: '100%' }}
-                              placeholder="Select Payment Options"
-                              name="intervals"
 
+                            <Select
+                              suffixIcon={<img src={arrow} alt="" />}
+                              mode={this.state.showReasonTextBox ? "single" : "multiple"}
+                              style={{ width: 320, height: 42, borderRadius: '7px', border: '1px solid #6B43B5' }}
+                              placeholder="Select Reasons"
+                              name="intervals"
+                              value={!this.state.showReasonTextBox ? this.state.reason : "Other"}
                               onChange={(e) => {
-                                this.setState({
-                                  available_interval: e
-                                })
+                                if (e && e.length > 0 && e.lastIndexOf("Other") != -1) {
+                                  this.setState({
+                                    showReasonTextBox: true,
+                                    reason: []
+                                  })
+                                } else {
+                                  this.setState({
+                                    reason: e,
+                                    other_reason: "",
+                                    showReasonTextBox: false
+                                  })
+                                }
+
                               }}
                               optionLabelProp="label"
                             >
                               {
-                                this.state.availableIntervals.map((interval) => (
-                                  <Option value={interval.id} label={interval.name}>
-                                    {interval.name}
+                                this.state.reasons.map((reason) => (
+                                  <Option value={reason.id} label={reason.reason}>
+                                    {reason.reason}
                                   </Option>
                                 ))
                               }
+                              <Option value={"Other"} label={"Other"}>
+                                Other
+                              </Option>
+
                             </Select>
                           </div>
-                        </>
-                      )
-                    }
-
-                    <label className='formLabel'>Amount</label>
-                    <Input
-                      onChange={this.handleChange}
-                      className={this.state.formErrorsPayReq &&
-                        this.state.formErrorsPayReq.Amount &&
-                        this.state.formErrorsPayReq.Amount.status ? "" : "inputs-error"}
-                      name="amount"
-                      type="decimal"
-                      placeholder="Enter amount in dollars"
-                      value={this.state.amount}
-                      prefix={<DollarOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    />
-                    {
-                      this.state.formErrorsPayReq && this.state.formErrorsPayReq.Amount &&
-                        this.state.formErrorsPayReq.Amount.status ?
-                        <></>
-                        :
-                        <div className='error-text'>
-                          {this.state.formErrorsPayReq.Amount.massage}
-                        </div>
-                    }
-
-                    {/* <label className='formLabel'>Statement Descriptor</label>
-                     <Input
-                      onChange={this.handleChange}
-                      className={this.state.formErrorsPayReq &&
-                        this.state.formErrorsPayReq.StatementDescriptor &&
-                        this.state.formErrorsPayReq.StatementDescriptor.status ? "inputs" : "inputs-error"}
-                      name="statement_descriptor"
-                      type="decimal"
-                      placeholder="Statement Descriptor"
-                      value={this.state.statement_descriptor}
-                    /> */}
-                    {
-                      this.state.formErrorsPayReq && this.state.formErrorsPayReq.StatementDescriptor &&
-                        this.state.formErrorsPayReq.StatementDescriptor.status ?
-                        <></>
-                        :
-                        <div className='error-text'>
-                          {this.state.formErrorsPayReq.StatementDescriptor.massage}
-                        </div>
-                    }
-
-                    <label className='formLabel'>Start Date</label>
-                    <div style={{ marginBottom: '10px' }}>
-                      <DatePicker
-                        disabledDate={this.disabledDate}
-                        onChange={this.handleDateChange}
-                        value={this.state.inputDate}
-                        className='w100p'
-                      />
-                    </div>
-
-                    <label className='formLabel'>Due Date</label>
-                    <div style={{ marginBottom: '10px' }}>
-                      <DatePicker
-                        onChange={this.handleDateChangeDueDate}
-                        value={this.state.inputDateDueDate}
-                        className='w100p'
-                      />
-                    </div>
-
-                    <label className='formLabel'>Invoice PDF file</label>
-                    <Dropzone
-                      multiple={true}
-                      accept={{
-                        'file/pdf': ['.pdf'],
-
-                      }} onDrop={e => this.handleUpload(e)} onClick={(e) => {
-                        e.preventDefault();
-                      }}>
-                      {({ getRootProps, getInputProps }) => (
-                        <section className="container">
-                          <div {...getRootProps({ className: 'dropzone' })}>
-                            <input {...getInputProps()} />
-
-
-                            <label className='formLabel '
-                              style={{
-                                color: "gray",
-                                backgroundColor: "#E4DCF5",
-                                display: "flex",
-                                height: "60px",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                border: "1px dashed #7A08FA",
-                                cursor: "pointer",
-                                maxWidth: "360px",
-                                minWidth: "unset",
-                                padding: "15px"
-                              }
-                              }
-                            >
-                              <div style={{ marginRight: "8px" }}>
-                                <CloudUploadOutlined style={{ fontSize: "25px" }} />
+                          {
+                            this.state.showReasonTextBox ?
+                              <div className="formInputs">
+                                <TextArea
+                                  style={{ width: 320, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                                  rows={4}
+                                  onChange={this.handleChange}
+                                  name="other_reason"
+                                  type="text"
+                                  placeholder="Reason for appointment"
+                                  value={this.state.other_reason}
+                                  prefix={<QuestionCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                />
                               </div>
-                              <div>Uploading Invoice File</div>
-                              <div className="upload-peyment-pdf" style={{ marginBottom: '50px' }}>
+                              :
+                              <></>
+                          }
+                        </Col>
+                        <Col span={8}>
+                          {
+                            this.state.payByAdmin == "false" && (
+                              <>
+                                <label className='formLabel'>Payment Options</label>
+                                <div style={{ marginBottom: '10px' }}>
+                                  <Select
+                                    suffixIcon={<img src={arrow} alt="" />}
+                                    style={{ width: 320, height: 42, borderRadius: '7px', border: '1px solid #6B43B5' }}
+                                    mode="multiple"
+                                    placeholder="Select Payment Options"
+                                    name="intervals"
 
+                                    onChange={(e) => {
+                                      this.setState({
+                                        available_interval: e
+                                      })
+                                    }}
+                                    optionLabelProp="label"
+                                  >
+                                    {
+                                      this.state.availableIntervals.map((interval) => (
+                                        <Option value={interval.id} label={interval.name}>
+                                          {interval.name}
+                                        </Option>
+                                      ))
+                                    }
+                                  </Select>
+                                </div>
+                              </>
+                            )
+                          }
+                        </Col>
+                        <Col span={8}>
+                          <label className='formLabel'>Amount</label>
+                          <Input
+                            style={{ width: 320, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                            onChange={this.handleChange}
+                            className={this.state.formErrorsPayReq &&
+                              this.state.formErrorsPayReq.Amount &&
+                              this.state.formErrorsPayReq.Amount.status ? "" : "inputs-error"}
+                            name="amount"
+                            type="decimal"
+                            placeholder="Enter Amount"
+                            value={this.state.amount}
+                          />
+                          {
+                            this.state.formErrorsPayReq && this.state.formErrorsPayReq.Amount &&
+                              this.state.formErrorsPayReq.Amount.status ?
+                              <></>
+                              :
+                              <div className='error-text'>
+                                {this.state.formErrorsPayReq.Amount.massage}
                               </div>
-                            </label>
+                          }
+                        </Col>
+                      </Row>
+                      <Row gutter={[45, 45]} style={{ display: "flex", flexDirection: 'row', marginBottom: 40 }} >
+                        <Col span={8}>
+                          {/* <label className='formLabel'>Statement Descriptor</label>
+                          <Input
+                            style={{ width: 320, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                            onChange={this.handleChange}
+                            className={this.state.formErrorsPayReq &&
+                              this.state.formErrorsPayReq.StatementDescriptor &&
+                              this.state.formErrorsPayReq.StatementDescriptor.status ? "inputs" : "inputs-error"}
+                            name="statement_descriptor"
+                            type="decimal"
+                            placeholder="Enter Statement Descriptor"
+                            value={this.state.statement_descriptor}
+                          />
+                          {
+                            this.state.formErrorsPayReq && this.state.formErrorsPayReq.StatementDescriptor &&
+                              this.state.formErrorsPayReq.StatementDescriptor.status ?
+                              <></>
+                              :
+                              <div className='error-text'>
+                                {this.state.formErrorsPayReq.StatementDescriptor.massage}
+                              </div>
+                          } */}
+                        </Col>
+                        <Col span={8}>
+                          <label className='formLabel'>Start Date</label>
+                          <div style={{ marginBottom: '10px' }}>
+                            <DatePicker
+                              suffixIcon={<img src={calendar} alt="" />}
+                              style={{ width: 320, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                              disabledDate={this.disabledDate}
+                              onChange={this.handleDateChange}
+                              value={this.state.inputDate}
+                              placeholder="Select Start Date"
+                              className='w100p'
+                            />
                           </div>
-                        </section>
-                      )}
-                    </Dropzone>
-                    {
-                      this.state.receipt_file && this.state.receipt_file.length > 0 ?
-                        this.state.receipt_file.map((file) => (
-                          file.name && (
-                            <div style={{ display: "flex", justifyContent: "center" }}>
-                              <div>
-                                <span style={{ fontWeight: "bold" }}> {file.name + " "}</span>
-                                selected
-                              </div>
-                              <div
+                        </Col>
+                        <Col span={8}>
+                          <label className='formLabel'>Due Date</label>
+                          <div style={{ marginBottom: '10px' }}>
+                            <DatePicker
+                              suffixIcon={<img src={calendar} alt="" />}
+                              style={{ width: 320, height: 42, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                              onChange={this.handleDateChangeDueDate}
+                              value={this.state.inputDateDueDate}
+                              placeholder="Select Due Date"
+                              className='w100p'
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <div>
+                          <label className='formLabel'>Invoice PDF file</label>
+                          <Dropzone
+                            multiple={true}
+                            accept={{
+                              'file/pdf': ['.pdf'],
 
-                                onClick={() => {
-                                  var myfiles = this.state.receipt_file
-                                  const newArray = myfiles.filter(item => item.name !== file.name);
-                                  this.setState({
-                                    receipt_file: newArray
-                                  })
-                                }}
-                                style={{ cursor: "pointer", fontSize: "10px" }}
-                              >
-                                <CloseOutlined />
-                              </div>
-
-                            </div>)
-                        ))
-
-                        : <></>
-                    }
-
-                    <label className='formLabel'>Supporting Document</label>
-                    <div style={{ marginBottom: '50px' }}>
-                      <Dropzone
-                        multiple={true}
-                        accept={{
-                          'file/pdf': ['.pdf'],
-
-                        }} onDrop={e => this.handleUploadSupportingDocument(e)} onClick={(e) => {
-                          e.preventDefault();
-                        }}>
-                        {({ getRootProps, getInputProps }) => (
-                          <section className="container">
-                            <div {...getRootProps({ className: 'dropzone' })}>
-                              <input {...getInputProps()} />
+                            }} onDrop={e => this.handleUpload(e)} onClick={(e) => {
+                              e.preventDefault();
+                            }}>
+                            {({ getRootProps, getInputProps }) => (
+                              <section className="container">
+                                <div {...getRootProps({ className: 'dropzone' })}>
+                                  <input {...getInputProps()} />
 
 
-                              <label className='formLabel '
-                                style={{
-                                  color: "gray",
-                                  backgroundColor: "#E4DCF5",
-                                  display: "flex",
-                                  height: "60px",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "1px dashed #7A08FA",
-                                  cursor: "pointer",
-                                  maxWidth: "360px",
-                                  minWidth: "unset",
-                                  padding: "15px"
-                                }
-                                }
-                              >
-                                <div style={{ marginRight: "8px" }}>
-                                  <CloudUploadOutlined style={{ fontSize: "25px" }} />
+                                  <label className='formLabel '
+                                    style={{
+                                      color: "gray",
+                                      backgroundColor: "none",
+                                      display: "flex",
+                                      height: "81px",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      border: "1px dashed #B7B7B7",
+                                      borderWidth: 2,
+                                      borderRadius: '8px',
+                                      cursor: "pointer",
+                                      maxWidth: "360px",
+                                      minWidth: "unset",
+                                      padding: "15px",
+                                      flexDirection: 'column'
+                                    }
+                                    }
+                                  >
+                                    <div>
+                                      <img src={export1} alt='' style={{ marginBottom: 5 }} />
+                                    </div>
+                                    <div style={{ color: '#B7B7B7' }}>Drag and drop or Browse your files</div>
+
+                                  </label>
                                 </div>
-                                <div>Uploading Supporting Document</div>
-                                <div className="upload-peyment-pdf" style={{ marginBottom: '50px' }}>
+                              </section>
+                            )}
+                          </Dropzone>
+                        </div>
+                        <div>
+                          <label className='formLabel'>Supporting Document</label>
+                          <div style={{ marginBottom: '50px' }}>
+                            <Dropzone
+                              multiple={true}
+                              accept={{
+                                'file/pdf': ['.pdf'],
 
-                                </div>
-                              </label>
-                            </div>
-                          </section>
-                        )}
-                      </Dropzone>
-                      {
-                        this.state.supporting_document && this.state.supporting_document.length > 0 ?
-                          this.state.supporting_document.map((file) => (
-                            file.name && (
-                              <div style={{ display: "flex", justifyContent: "center" }}>
-                                <div>
-                                  <span style={{ fontWeight: "bold" }}> {file.name + " "}</span>
-                                  selected
-                                </div>
-                                <div
+                              }} onDrop={e => this.handleUploadSupportingDocument(e)} onClick={(e) => {
+                                e.preventDefault();
+                              }}>
+                              {({ getRootProps, getInputProps }) => (
+                                <section className="container">
+                                  <div {...getRootProps({ className: 'dropzone' })}>
+                                    <input {...getInputProps()} />
 
-                                  onClick={() => {
-                                    var myfiles = this.state.supporting_document
-                                    const newArray = myfiles.filter(item => item.name !== file.name);
-                                    this.setState({
-                                      supporting_document: newArray
-                                    })
-                                  }}
-                                  style={{ cursor: "pointer", fontSize: "10px" }}
-                                >
-                                  <CloseOutlined />
-                                </div>
-                              </div>)
-                          ))
 
-                          : <></>
-                      }
-                    </div>
-
-                    <div className="btnBox" style={{ display: "flex" }}>
-                      <button className='whiteBtn cancel-btn' onClick={this.goToDashboard}>Back</button>
-
-                      <button
-                        onClick={this.state.payByAdmin == "true" ? this.handleSubmitPayAdmin : this.handleSubmit}
-                        className='createBtn login-btn'
-                        type="submit"
-                        disabled={this.state.loaddingsendPayReq}>
+                                    <label className='formLabel '
+                                      style={{
+                                        color: "gray",
+                                        backgroundColor: "none",
+                                        display: "flex",
+                                        height: "81px",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        border: "1px dashed #B7B7B7",
+                                        borderWidth: 2,
+                                        borderRadius: '8px',
+                                        cursor: "pointer",
+                                        maxWidth: "360px",
+                                        minWidth: "unset",
+                                        padding: "15px",
+                                        flexDirection: 'column'
+                                      }
+                                      }
+                                    >
+                                      <div>
+                                        <img src={export1} alt='' style={{ marginBottom: 5 }} />
+                                      </div>
+                                      <div style={{ color: '#B7B7B7' }}>Drag and drop or Browse your files</div>
+                                    </label>
+                                  </div>
+                                </section>
+                              )}
+                            </Dropzone>
+                          </div>
+                        </div>
                         {
-                          this.state.payByAdmin == "true" ?
+                          this.state.receipt_file && this.state.receipt_file.length > 0 ?
+                            this.state.receipt_file.map((file) => (
+                              file.name && (
+                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                  <div>
+                                    <span style={{ fontWeight: "bold" }}> {file.name + " "}</span>
+                                    selected
+                                  </div>
+                                  <div
+
+                                    onClick={() => {
+                                      var myfiles = this.state.receipt_file
+                                      const newArray = myfiles.filter(item => item.name !== file.name);
+                                      this.setState({
+                                        receipt_file: newArray
+                                      })
+                                    }}
+                                    style={{ cursor: "pointer", fontSize: "10px" }}
+                                  >
+                                    <CloseOutlined />
+                                  </div>
+
+                                </div>)
+                            ))
+
+                            : <></>
+                        }
+                        {
+                          this.state.supporting_document && this.state.supporting_document.length > 0 ?
+                            this.state.supporting_document.map((file) => (
+                              file.name && (
+                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                  <div>
+                                    <span style={{ fontWeight: "bold" }}> {file.name + " "}</span>
+                                    selected
+                                  </div>
+                                  <div
+
+                                    onClick={() => {
+                                      var myfiles = this.state.supporting_document
+                                      const newArray = myfiles.filter(item => item.name !== file.name);
+                                      this.setState({
+                                        supporting_document: newArray
+                                      })
+                                    }}
+                                    style={{ cursor: "pointer", fontSize: "10px" }}
+                                  >
+                                    <CloseOutlined />
+                                  </div>
+                                </div>)
+                            ))
+
+                            : <></>
+                        }
+
+                      </div>
+                    </Card>
+                    <div className="btnBox" style={{ display: "flex", width: '95%' }}>
+                      <Button onClick={this.goToDashboard} style={{ width: 131, height: 45, border: ' 2px solid #6B43B5', borderRadius: '5000px', color: '#6B43B5' }}>Back</Button>
+
+                      <Button
+                        onClick={this.state.payByAdmin === "true" ? this.handleSubmitPayAdmin : this.handleSubmit}
+                        type="submit"
+                        disabled={this.state.loaddingsendPayReq}
+                        style={{ marginLeft: 'auto', width: 131, height: 45, background: '#6B43B5', color: 'white', borderRadius: '5000px', fontSize: '16px' }}
+                      >
+                        {
+                          this.state.payByAdmin === "true" ?
 
                             this.state.loaddingsendPayReq ? "Go to Payment Flow..." : "Pay"
                             :
                             this.state.loaddingsendPayReq ? "Sending..." : "Send"
                         }
-                      </button>
+                      </Button>
                     </div>
-
                   </div>
               }
             </div>
+
           </div>
-          <Modal title="Add Patient"
+
+          <Modal
+            title="Add Patient"
             open={this.state.modal_add_patient}
-            okText='Create new Patient'
-            onOk={() => this.createNewPatient()}
+            okText='Create'
             onCancel={() => this.handleCloseModalAddPatient()}
+            onOk={() => this.createNewPatient()}
+            className='modal-size1'
+            footer={[
+              <Button style={{ width: 139, height: 38 }} key="submit" type="primary" onClick={() => this.createNewPatient()}>
+                Create
+              </Button>,
+            ]}
           >
-            <label className='formLabel'>First Name</label>
-            <Input
-              onChange={this.handleChange}
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.FirstName &&
-                this.state.formErrorsPatient.FirstName.massage == '' ? "" : "inputs-error"}
-              type="text"
-              name="patient_first_name"
-              placeholder="John"
-              value={this.state.patient_first_name}
-              prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+            <Row gutter={[25, 25]} style={{ display: "flex", flexDirection: 'row' }} >
+              <Col span={12}>
+                <label className='formLabel'>Full Name</label>
+                <Input
+                  style={{ width: 230, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  onChange={this.handleChange}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.FirstName &&
+                    this.state.formErrorsPatient.FirstName.massage == '' ? "" : "inputs-error"}
+                  type="text"
+                  name="patient_first_name"
+                  placeholder="Enter Full Name"
+                  value={this.state.patient_first_name}
+                  prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
 
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.FirstName && this.state.formErrorsPatient.FirstName.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient.FirstName.massage}
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.FirstName && this.state.formErrorsPatient.FirstName.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient.FirstName.massage}
 
-                </div>
-            }
-            <label className='formLabel'>Last Name</label>
-            <Input
-              onChange={this.handleChange}
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.LastName &&
-                this.state.formErrorsPatient.LastName.massage == '' ? "" : "inputs-error"}
-              type="text"
-              name="patient_last_name"
-              placeholder="Doe"
-              value={this.state.patient_last_name}
-              prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    </div>
+                }
+              </Col>
 
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.LastName && this.state.formErrorsPatient.LastName.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient.LastName.massage}
+              <Col span={12}>
+                <label className='formLabel'>Birth Date</label>
+                <DatePicker
+                  style={{ width: 230, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  name="birth_date"
+                  placeholder="Enter Birth Date"
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.BirthDate &&
+                    this.state.formErrorsPatient.BirthDate.status ?
+                    "inputs" : "inputs-error"}
+                  htmlType="submit"
+                  onChange={this.handleBirthDateChange}
+                  value={this.state.birth_day_preview}
+                  suffixIcon={<img src={calendar} alt="" />}
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.BirthDate &&
+                    this.state.formErrorsPatient.BirthDate.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient && this.state.formErrorsPatient.BirthDate ?
+                        this.state.formErrorsPatient.BirthDate.massage : ""}
+                    </div>
+                }
+              </Col>
+            </Row>
+            <Row gutter={[25, 25]} style={{ display: "flex", flexDirection: 'row' }} >
+              <Col span={12}>
+                <label className='formLabel'>Email</label>
+                <Input
+                  style={{ width: 230, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  onChange={this.handleChange}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.Email &&
+                    this.state.formErrorsPatient.Email.massage == '' ? "" : "inputs-error"}
+                  name="patient_email_address"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="Enter Email"
+                  value={this.state.patient_email_address}
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.Email &&
+                    this.state.formErrorsPatient.Email.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient.Email.massage}
 
-                </div>
-            }
-            <label className='formLabel'>Birth Date</label>
-            <DatePicker
-              name="birth_date"
-              placeholder="Choose date"
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.BirthDate &&
-                this.state.formErrorsPatient.BirthDate.status ?
-                "inputs" : "inputs"}
-              htmlType="submit"
-              onChange={this.handleBirthDateChange}
-              value={this.state.birth_day_preview}
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.BirthDate &&
-                this.state.formErrorsPatient.BirthDate.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient && this.state.formErrorsPatient.BirthDate ?
-                    this.state.formErrorsPatient.BirthDate.massage : ""}
-                </div>
-            }
+                    </div>
+                }
+              </Col>
+              <Col span={12}>
+                <label className='formLabel'>Phone</label>
+                <Input
+                  style={{ width: 230, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  onChange={this.handleChange}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.Phone &&
+                    this.state.formErrorsPatient.Phone.massage === '' ? "" : "inputs-error"}
+                  type="text"
+                  name="patient_phone_number"
+                  placeholder="Enter Phone Number"
+                  value={this.state.patient_phone_number}
 
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.Phone &&
+                    this.state.formErrorsPatient.Phone.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient.Phone.massage}
 
+                    </div>
+                }
+              </Col>
+            </Row>
+            <Row gutter={[25, 25]} style={{ display: "flex", flexDirection: 'row' }} >
+              <Col span={8}>
+                <label className='formLabel' onClick={() => {
+                }}>State</label>
+                <Input
+                  style={{ width: 145, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.pState &&
+                    this.state.formErrorsPatient.pState.massage == '' ? "" : "inputs-error"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="patient_state"
+                  placeholder="Enter State"
+                  value={this.state.patient_state}
 
-            <label className='formLabel'>Patient Email</label>
-            <Input
-              onChange={this.handleChange}
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.Email &&
-                this.state.formErrorsPatient.Email.massage == '' ? "" : "inputs-error"}
-              name="patient_email_address"
-              type="email"
-              autoComplete="email"
-              placeholder="example@email.com"
-              value={this.state.patient_email_address}
-              prefix={<MailOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.Email &&
-                this.state.formErrorsPatient.Email.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient.Email.massage}
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.pState &&
+                    this.state.formErrorsPatient.pState.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient && this.state.formErrorsPatient.pState ?
+                        this.state.formErrorsPatient.pState.massage : ""}
 
-                </div>
-            }
+                    </div>
+                }
+              </Col>
+              <Col span={8}>
+                <label className='formLabel'>City</label>
+                <Input
+                  style={{ width: 145, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.City &&
+                    this.state.formErrorsPatient.City.massage === '' ? "" : "inputs-error"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="patient_city"
+                  placeholder="Enter City"
+                  value={this.state.patient_city}
 
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.City &&
+                    this.state.formErrorsPatient.City.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient.City.massage}
 
-            <label className='formLabel'>Phone</label>
-            <Input
-              onChange={this.handleChange}
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.Phone &&
-                this.state.formErrorsPatient.Phone.massage == '' ? "" : "inputs-error"}
-              type="text"
-              name="patient_phone_number"
-              placeholder="123 456 0789"
-              value={this.state.patient_phone_number}
-              prefix={"+1"}
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.Phone &&
-                this.state.formErrorsPatient.Phone.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient.Phone.massage}
+                    </div>
+                }
+              </Col>
+              <Col span={8}>
+                <label className='formLabel'>Postal Code</label>
+                <Input
+                  style={{ width: 145, height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                  className={this.state.formErrorsPatient &&
+                    this.state.formErrorsPatient.Zipcode &&
+                    this.state.formErrorsPatient.Zipcode.massage === '' ? "" : "inputs-error"}
+                  onChange={this.handleChange}
+                  type="text"
+                  name="Zipcode"
+                  placeholder="Enter Postal Code"
+                  value={this.state.Zipcode}
+                />
+                {
+                  this.state.formErrorsPatient && this.state.formErrorsPatient.Zipcode &&
+                    this.state.formErrorsPatient.Zipcode.status ?
+                    <></>
+                    :
+                    <div className='error-text'>
+                      {this.state.formErrorsPatient && this.state.formErrorsPatient.Zipcode ?
+                        this.state.formErrorsPatient.Zipcode.massage : ""}
 
-                </div>
-            }
+                    </div>
+                }
+              </Col>
+            </Row>
+            <div style={{ marginBottom: 35 }}>
+              <label className='formLabel'>Address</label>
+              <Input
+                style={{ height: 39, borderRadius: '8px', border: '1px solid #6B43B5' }}
+                onChange={this.handleChange}
+                className={this.state.formErrorsPatient &&
+                  this.state.formErrorsPatient.Address &&
+                  this.state.formErrorsPatient.Address.massage == '' ? "" : "inputs-error"}
+                type="text"
+                name="patient_address"
+                placeholder="Enter Address"
+                value={this.state.patient_address}
 
-
-
-            <label className='formLabel'>Address</label>
-            <Input
-              onChange={this.handleChange}
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.Address &&
-                this.state.formErrorsPatient.Address.massage == '' ? "" : "inputs-error"}
-              type="text"
-              name="patient_address"
-              placeholder="581 Whiff Ann Le"
-              value={this.state.patient_address}
-              prefix={<HomeOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-
-            />
+              />
+            </div>
             {
               this.state.formErrorsPatient &&
                 this.state.formErrorsPatient.Address &&
@@ -1660,78 +1770,12 @@ class PaymentRequestPage extends Component {
 
 
 
-            <label className='formLabel'>City</label>
-            <Input
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.City &&
-                this.state.formErrorsPatient.City.massage == '' ? "" : "inputs-error"}
-              onChange={this.handleChange}
-              type="text"
-              name="patient_city"
-              placeholder="London"
-              value={this.state.patient_city}
-              prefix={<EnvironmentOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
 
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.City &&
-                this.state.formErrorsPatient.City.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient.City.massage}
 
-                </div>
-            }
 
-            <label className='formLabel' onClick={() => {
-            }}>State</label>
-            <Input
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.pState &&
-                this.state.formErrorsPatient.pState.massage == '' ? "" : "inputs-error"}
-              onChange={this.handleChange}
-              type="text"
-              name="patient_state"
-              placeholder="NY"
-              value={this.state.patient_state}
-              prefix={<EnvironmentOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
 
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.pState &&
-                this.state.formErrorsPatient.pState.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient && this.state.formErrorsPatient.pState ?
-                    this.state.formErrorsPatient.pState.massage : ""}
 
-                </div>
-            }
 
-            <label className='formLabel'>Zipcode</label>
-            <Input
-              className={this.state.formErrorsPatient &&
-                this.state.formErrorsPatient.Zipcode &&
-                this.state.formErrorsPatient.Zipcode.massage == '' ? "" : "inputs-error"}
-              onChange={this.handleChange}
-              type="text"
-              name="Zipcode"
-              placeholder="12345"
-              value={this.state.Zipcode}
-            />
-            {
-              this.state.formErrorsPatient && this.state.formErrorsPatient.Zipcode &&
-                this.state.formErrorsPatient.Zipcode.status ?
-                <></>
-                :
-                <div className='error-text'>
-                  {this.state.formErrorsPatient && this.state.formErrorsPatient.Zipcode ?
-                    this.state.formErrorsPatient.Zipcode.massage : ""}
-
-                </div>
-            }
 
           </Modal>
         </DashboardLayout>

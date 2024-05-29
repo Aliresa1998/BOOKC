@@ -10,42 +10,41 @@ import '../app.local.css'
 import App from "../stripe/App"
 import PaymentPdfDownloader from "./PaymentPdfDownloader"
 import CreateGurantorBillingForm from './CreateGurantorBillingForm'
+import SelectPaymentMethod from '../Payment/SelectPaymentMethod';
+import CustomCard from '../Payment/Components/CustomCard'
+import Payment from '../Payment/Payment';
+import PaymentWizardStep2 from '../Payment/PaymentWizardStep2';
+
+
+
+//Icons
+import user from '../../assets/icons/user.png';
+import call from '../../assets/icons/call.png';
+import sms from '../../assets/icons/sms.png';
+import buliding from '../../assets/icons/buliding.png';
+import loc from '../../assets/icons/location.png';
+import download from '../../assets/icons/frame.png';
 
 class PaymentFirstPage extends Component {
   getPaymentData = async () => {
     this.setState({
       loading: true
-    })
-    if (window.location.href.split("/") &&
-      window.location.href.split("/")[window.location.href.split("/").length - 1]
-    ) {
-      localStorage.setItem("paymentId",
-        window.location.href.split("/")[window.location.href.split("/").length - 1]
-      )
-      const response = await Paymentcontroller.get_payment_data(
-        window.location.href.split("/")[window.location.href.split("/").length - 1]
-      )
-      if (response.paid || response.status == "subscription") {
-        localStorage.setItem("Payment-Receipt", true)
-        window.location.href = "#/payment-Done"
-      } else {
-        const respo = await Paymentcontroller.checkMultiPaymentDone(
-          localStorage.getItem("paymentId")
-        )
-        if (respo.status) {
-          window.location.href = "#/payment-Done"
-        }
-        localStorage.setItem("Payment-Receipt", false)
-      }
-      this.setState({
-        payment_data: response,
-        loading: false
-      })
-    }
+    });
+    const paymentId = this.props.selectediD;
 
-  }
+    localStorage.setItem("paymentId", paymentId);
+
+    const response = await Paymentcontroller.get_payment_data(paymentId);
+
+
+    this.setState({
+      payment_data: response,
+      loading: false
+    });
+  };
+
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       loading: true,
       stripe_complete: true,
@@ -53,31 +52,59 @@ class PaymentFirstPage extends Component {
       visibleModal: false,
       openModalMultiFile: false,
       downloadMultiFileTitle: "",
-      ModalMultiFileData: []
-    }
+      ModalMultiFileData: [],
+      selectedPaymentType: null,
+      selectedIntervalId: null
+    };
     this.getPaymentData();
-    this.handlePayment = this.handlePayment.bind(this)
-    this.nextOption = this.nextOption.bind(this)
+    this.handlePayment = this.handlePayment.bind(this);
+    this.nextOption = this.nextOption.bind(this);
   }
   nextOption = async () => {
-    const response = await Paymentcontroller.get_payment_data(
-      window.location.href.split("/")[window.location.href.split("/").length - 1]
-    )
+    this.props.onNextStep();
+  };
 
-    if (response.paid || response.status == "subscription") {
-      localStorage.setItem("Payment-Receipt", true)
-      window.location.href = "#/payment-Done"
-    } else {
-      localStorage.setItem("Payment-Receipt", false)
-      if (!response.billing_complete) {
-        this.setState({
-          stripe_complete: false
-        })
-      } else {
-        window.location.href = "/#/payment-flow/" + window.location.href.split("/")[window.location.href.split("/").length - 1]
-      }
+  handleDataFromChild = (data) => {
+    this.setState({ childData: data });
+  }
+
+  handleSelectPaymentType = (paymentType) => {
+    this.setState({ selectedPaymentType: paymentType });
+  };
+
+
+  handleIntervalChange = (intervalId) => {
+    console.log("Setting Interval ID:", intervalId); // Confirming the input ID
+    this.setState({ selectedIntervalId: intervalId }, () => {
+      console.log("Updated Interval ID:", this.state.selectedIntervalId); // Confirm state has updated
+    });
+  };
+
+
+  // sendData = () => {
+  //   this.props.sendDataToParent(this.childData);
+  // }
+
+
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectediD !== this.props.selectediD) {
+      this.getPaymentData();
+    }
+    // Ensure `selectedIntervalId` changes trigger necessary updates or propogations
+    if (prevState.selectedIntervalId !== this.state.selectedIntervalId) {
+      console.log("Interval ID has changed:", this.state.selectedIntervalId);
+      // Trigger any action that depends on updated interval ID
     }
   }
+
+
+  componentDidMount() {
+    if (this.props.selectediD) {
+      this.getPaymentData(this.props.selectediD);
+    }
+  }
+
 
   openNotification = (placement, message, status) => {
     if (status && status.toLowerCase().search("success") != -1) {
@@ -106,6 +133,8 @@ class PaymentFirstPage extends Component {
 
   }
 
+
+
   handlePayment = async () => {
     if (this.state.payment_data.stripe_complete) {
       const response = await Paymentcontroller.paySinglePayment(
@@ -124,315 +153,199 @@ class PaymentFirstPage extends Component {
   }
   render() {
     return (
-      <div>
-        <div className='dashboard-container'>
-          <div className="pageBody wizard-page">
-            <div className="page-header">
-              <div className="title pageHeader">
-                {
-                  this.state.payment_data && this.state.payment_data.office_logo ?
-                    <img className='bookcLogo'
-                      src={this.state.payment_data.office_logo + ""}
-                      alt="logo"
-                    />
-                    :
-                    <></>
-                }
 
-              </div>
-              <span className='appointmentStep' style={{ fontWeight: "bold" }}>
-                {
-                  this.state.loading ? "" :
-                    this.state.stripe_complete ? "Payment Page" : "Billing Information"
-                }
+      <><><Card style={{ marginTop: 25, marginLeft: 15, marginRight: 15 }}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ marginRight: 65 }}>
+            <div style={{ marginBottom: 20, fontSize: '16px' }}>Patient Information</div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+              <img src={user} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px', fontWeight: '400' }}>
+                {this.state.payment_data &&
+                  this.state.payment_data.guarantor_firstname &&
+                  this.state.payment_data.guarantor_lastname
+                  ? this.state.payment_data.guarantor_firstname +
+                  " " +
+                  this.state.payment_data.guarantor_lastname
+                  : "-"}
               </span>
             </div>
-            <div>
-              <Card style={{ borderTop: "5px solid #a677f6" }} bodyStyle={{ padding: '10px' }}>
-                <div className='header_payment_page_part'>
-                  {
-                    !this.state.loading ? "Billing Information" : ""
-                  }
-                </div>
-
-                {
-                  this.state.loading ?
-                    <>Loading...</>
-                    :
-                    !this.state.stripe_complete ?
-                      <>
-                        <hr className='endline_payment' />
-
-                        <CreateGurantorBillingForm
-                          handleSubmit2={this.handleSubmit2}
-                        />
-                        <div style={{ height: "15px" }}></div>
-                      </>
-                      :
-                      <>
-                        <div className='main_container_card '>
-                          <div>
-                            <div>Name</div>
-                            <div>Email</div>
-                            <div>Phone</div>
-                            <div>Reason</div>
-                          </div>
-                          <div className='align_rights_items'
-                            style={{
-                              maxWidth: "400px",
-                              marginLeft: "10%"
-                            }}
-                          >
-                            <div>{this.state.payment_data.guarantor_firstname &&
-                              this.state.payment_data.guarantor_lastname ?
-                              this.state.payment_data.guarantor_firstname + " " + this.state.payment_data.guarantor_lastname : "-"}</div>
-                            <div>{this.state.payment_data.guarantor_email ? this.state.payment_data.guarantor_email : "-"}</div>
-                            <div>{this.state.payment_data.guarantor_phone ? this.state.payment_data.guarantor_phone : "-"}</div>
-                            <div>
-                              {
-                                this.state.payment_data.other_reason ?
-                                  <span>{this.state.payment_data.other_reason}</span>
-                                  :
-                                  this.state.payment_data.reason_data && this.state.payment_data.reason_data.map((item) => (
-                                    <Tag
-                                      style={{ marginRight: "0px", marginLeft: "2px" }}
-                                      color="purple">{item.reason}</Tag>
-                                  ))
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        <div className='header_payment_page_part'>
-                          Clinic Information
-                        </div>
-                        <div className='main_container_card '>
-                          <div style={{ paddingRight: "50px" }}>
-                            <div>Name</div>
-                            <div>Phone</div>
-                            <div>Address</div>
-                          </div>
-                          <div className='align_rights_items'>
-                            <div>{this.state.payment_data.office_name ? this.state.payment_data.office_name : "-"}</div>
-                            <div>{this.state.payment_data.office_phone ? this.state.payment_data.office_phone : "-"}</div>
-                            <div>{this.state.payment_data.office_address ? this.state.payment_data.office_address : "-"}</div>
-                          </div>
-                        </div>
-                        {
-                          this.state.payment_data.status != "canceled" && (
-                            <>
-                              <div
-                                style={{
-                                  marginTop: "15px",
-                                }}
-                                className='main_container_card'>
-                                <div>
-                                  <div
-                                    style={{
-                                      fontWeight: "bold",
-                                      align: "left"
-                                    }}
-                                  >Patient Invoice</div>
-                                </div>
-                                <div className='align_rights_items'>
-
-                                  <div style={
-                                    this.state.payment_data &&
-                                      this.state.payment_data.invoice &&
-                                      this.state.payment_data.invoice.length > 0
-                                      ?
-                                      { cursor: "pointer" } : {}}
-                                    onClick={() => {
-                                      if (this.state.payment_data &&
-                                        this.state.payment_data.invoice &&
-                                        this.state.payment_data.invoice.length > 0
-                                      ) {
-                                        if (this.state.payment_data.invoice.length > 1) {
-                                          console.log(this.state.payment_data.invoice)
-                                          this.setState({
-                                            openModalMultiFile: true,
-                                            downloadMultiFileTitle: "Download Invoices Files",
-                                            ModalMultiFileData: this.state.payment_data.invoice
-                                          })
-
-                                        } else {
-                                          this.state.payment_data.invoice.forEach(item => {
-                                            if (item && item.invoice) {
-                                              window.open(config.apiGateway.URL + item.invoice, '_blank');
-                                            }
-                                          })
-                                        }
-                                      }
-                                    }}
-                                  >{
-                                      this.state.payment_data &&
-                                        this.state.payment_data.invoice ?
-                                        <img style={{ width: "20px", marginTop: "-10px", cursor: "pointer" }} src={buttonSvgrepo} />
-                                        :
-                                        <PaymentPdfDownloader data={
-                                          {
-                                            Name: this.state.payment_data.guarantor_firstname &&
-                                              this.state.payment_data.guarantor_lastname ?
-                                              this.state.payment_data.guarantor_firstname + " " + this.state.payment_data.guarantor_lastname : "-",
-
-                                            Email: this.state.payment_data.guarantor_email ? this.state.payment_data.guarantor_email : "-",
-                                            Phone: this.state.payment_data.guarantor_phone ? this.state.payment_data.guarantor_phone : "-",
-                                            Reason: this.state.payment_data.other_reason ?
-
-                                              this.state.payment_data.other_reason
-                                              :
-                                              this.state.payment_data.reason_data ? this.state.payment_data.reason_data
-                                                :
-                                                "-",
-                                            Amount: this.state.payment_data.amount ? this.state.payment_data.amount : "-",
-                                            Clinic: this.state.payment_data.office_name ? this.state.payment_data.office_name : "-"
-                                          }
-                                        } />
-                                    }
-                                  </div>
-                                </div>
-
-                              </div>
-                              <div className='main_container_card '>
-                                <div
-                                  style={{
-
-                                    fontWeight: "bold",
-                                    align: "left"
-                                  }}
-                                >
-                                  <div> Supporting Document</div>
-                                </div>
-                                <div className='align_rights_items'>
-
-                                  <div
-                                    style={
-                                      this.state.payment_data &&
-                                        this.state.payment_data.supporting_document &&
-                                        this.state.payment_data.supporting_document.length > 0 ?
-                                        { cursor: "pointer" } : {}}
-                                    onClick={() => {
-                                      if (this.state.payment_data &&
-                                        this.state.payment_data.supporting_document &&
-                                        this.state.payment_data.supporting_document.length > 0
-                                      ) {
-                                        if (this.state.payment_data.supporting_document.length > 1) {
-                                          console.log(this.state.payment_data.supporting_document)
-                                          this.setState({
-                                            openModalMultiFile: true,
-                                            downloadMultiFileTitle: "Download Supporting Document Files",
-                                            ModalMultiFileData: this.state.payment_data.supporting_document
-                                          })
-
-                                        } else {
-                                          this.state.payment_data.supporting_document.forEach(item => {
-                                            if (item && item.supporting_document) {
-                                              window.open(config.apiGateway.URL + item.supporting_document, '_blank');
-                                            }
-                                          })
-                                        }
-                                      }
-                                    }}
-
-                                  >{
-                                      this.state.payment_data &&
-                                        this.state.payment_data.supporting_document &&
-                                        this.state.payment_data.supporting_document.length > 0
-                                        ?
-                                        <img style={{ width: "20px", marginTop: "-10px" }} src={buttonSvgrepo} />
-                                        :
-                                        <img style={{ width: "20px", marginTop: "-10px" }} src={buttonSvgrepoDisabled} />
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                            </>
-                          )
-                        }
-
-
-                        <hr className='endline_payment' />
-                        <div className='main_container_card ' style={{ paddingTop: "0px", fontWeight: "bold" }}>
-                          <div>
-                            <div>Amount Due</div>
-                          </div>
-                          <div className='align_rights_items' s>
-                            <div>{this.state.payment_data.amount ? this.state.payment_data.amount : "-"}</div>
-                          </div>
-                        </div>
-                        <div style={{ height: "15px" }}></div>
-
-                        <Row><Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
-                          <Button
-                            onClick={() => {
-                              if (this.state.payment_data && this.state.payment_data.status != "canceled")
-                                this.nextOption()
-                              //this.setState({ visibleModal: true })
-                            }}
-                            disabled={this.state.payment_data && this.state.payment_data.status != "canceled" ? false : true}
-                            className="login-btn submit-wizard-btn" type="primary" size='large' >
-                            {this.state.payment_data.status != "canceled" ? "Next" : "Canceled"}
-
-
-                          </Button></Col></Row>
-                        <div style={{ height: "15px" }}></div>
-                      </>
-                }
-              </Card>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+              <img src={call} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px' }}>
+                {this.state.payment_data.guarantor_phone
+                  ? this.state.payment_data.guarantor_phone
+                  : "-"}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <img src={sms} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px' }}>
+                {this.state.payment_data.guarantor_email
+                  ? this.state.payment_data.guarantor_email
+                  : "-"}
+              </span>
+            </div>
+          </div>
+          <div>
+            <div style={{ marginBottom: 20, fontSize: '16px' }}>Clinic Information</div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+              <img src={buliding} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px', fontWeight: '400' }}>
+                {this.state.payment_data.office_name
+                  ? this.state.payment_data.office_name
+                  : "-"}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+              <img src={call} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px' }}>
+                {this.state.payment_data.office_phone
+                  ? this.state.payment_data.office_phone
+                  : "-"}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <img src={loc} alt="" style={{ marginRight: 10 }} />
+              <span style={{ fontSize: '13px' }}>
+                {this.state.payment_data.office_address
+                  ? this.state.payment_data.office_address
+                  : "-"}
+              </span>
             </div>
           </div>
         </div>
-        <Modal onCancel={() => {
-          this.setState({ visibleModal: false })
-        }} footer={null} title="Payment" visible={this.state.visibleModal} >
-          <App />
-        </Modal>
-        <PoweredBy />
+      </Card>
+        <div className="flex-row12">
+          <p className="reason-color">Reason:</p>
+          <span className="reason-span">
+            {this.state.payment_data.other_reason ? (
+              <span>{this.state.payment_data.other_reason}</span>
+            ) : (
+              <div className='tag-mr'>
+                {this.state.payment_data.reason_data &&
+                  this.state.payment_data.reason_data.map((item) => (
+                    <Tag className="tag_reason" color="rgba(233, 230, 255, 1)">
+                      {item.reason}
+                    </Tag>
 
+                  ))}
+              </div>
+            )}
+          </span>
+        </div>
+        <div className="flex-row123" style={{ marginLeft: 15, marginRight: 15 }}>
+          <p>Created Date</p>
+          <span className="reason-span">
+            {this.state.payment_data.created_at
+              ? new Date(this.state.payment_data.created_at)
+                .toISOString()
+                .replace(/T/, " ")
+                .replace(/\.\d+Z$/, "")
+              : "-"}
+          </span>
+        </div><div className="flex-row123" style={{ justifyContent: 'space-between' }}>
+          <Card className="card-size11">
+            <div className="card-size11">
+              <div>Patient Invoice</div>
+              <Button
+                type="text"
+                icon={<img src={download} alt="" />}
+                style={{ color: "#979797", marginLeft: 'auto', marginRight: 40 }}
+                onClick={() => {
+                  if (this.state.payment_data &&
+                    this.state.payment_data.invoice &&
+                    this.state.payment_data.invoice.length > 0) {
+                    if (this.state.payment_data.invoice.length > 1) {
+                      console.log(this.state.payment_data.invoice)
+                      this.setState({
+                        openModalMultiFile: true,
+                        downloadMultiFileTitle: "Download Invoices Files",
+                        ModalMultiFileData: this.state.payment_data.invoice
+                      })
 
-        <Modal
-          className="mwf"
-          visible={this.state.openModalMultiFile}
-          title={this.state.downloadMultiFileTitle}
-          onCancel={() => {
-            this.setState({
-              openModalMultiFile: false,
-              downloadMultiFileTitle: "",
-              ModalMultiFileData: []
-            });
-          }}
-          footer={null}
-        >
-          {
-            this.state.ModalMultiFileData &&
-              this.state.ModalMultiFileData.length > 0 ?
-              this.state.ModalMultiFileData.map((item) => (
-                <Row type="flex" justify="space-between" className="lineHeightModalStyle">
-                  <Col>
-                    {
-                      item.invoice ? item.invoice.split('/').pop() :
-                        item.supporting_document ? item.supporting_document.split('/').pop() : ""
-                    }
-                  </Col>
-                  <Col>
-                    <img
-                      onClick={() => {
-                        item.invoice ?
+                    } else {
+                      this.state.payment_data.invoice.forEach(item => {
+                        if (item && item.invoice) {
                           window.open(config.apiGateway.URL + item.invoice, '_blank')
-                          :
+                        }
+                      })
+                    }
+
+                  }
+                }} />
+            </div>
+          </Card>
+          <Card className="card-size11">
+            <div className="card-size11">
+              <div style={{ width: '90%' }}>Supporting Document</div>
+              <Button
+                type="text"
+                icon={<img src={download} alt="" />}
+                style={{ color: "#979797", marginLeft: 'auto', marginRight: 40 }}
+                onClick={() => {
+                  if (this.state.payment_data &&
+                    this.state.payment_data.supporting_document &&
+                    this.state.payment_data.supporting_document.length > 0) {
+
+                    if (this.state.payment_data.supporting_document.length > 1) {
+                      console.log(this.state.payment_data.supporting_document)
+                      this.setState({
+                        openModalMultiFile: true,
+                        downloadMultiFileTitle: "Download Supporting Document Files",
+                        ModalMultiFileData: this.state.payment_data.supporting_document
+                      })
+
+                    } else {
+
+
+                      this.state.payment_data.supporting_document.forEach(item => {
+                        if (item && item.supporting_document) {
                           window.open(config.apiGateway.URL + item.supporting_document, '_blank')
-                      }}
-                      alt="download" style={{ width: "20px", marginTop: "-10px", cursor: "pointer" }} src={buttonSvgrepo} />
-                  </Col>
-                </Row>
-              ))
-              :
-              <></>
-          }
+                        }
+                      })
+                    }
+                  }
 
-        </Modal>
+                }} />
+            </div>
+          </Card>
+        </div>
+        <hr />
+        <div className="flex-row123">
+          <p className="amount-size-color">Amount Due</p>
+          <span className="reason-span1">
+            {this.state.payment_data.amount
+              ? this.state.payment_data.amount
+              : "-"}
+          </span>
+        </div>
+        <SelectPaymentMethod selectedPaymentId={this.props.selectediD} onNextStep={this.nextOption} onSelectPaymentType={this.handleSelectPaymentType} onIntervalSelect={this.handleIntervalChange} />
+        {this.state.selectedPaymentType === 'single' ? (
+          <Payment onNextStep={this.handleNextStep} selectedId={this.props.selectediD} />
+        ) : null}
+        {this.state.selectedPaymentType === 'wizard' && (
+          <PaymentWizardStep2
+            onNextStep={this.nextOption}
+            selectediD={this.props.selectediD}
+            selectedIntervalId={this.state.selectedIntervalId} // Ensure this is from state, not props
+          />
+        )}
 
+        {/* <div>
+          <SelectPaymentMethod
+           selectedPaymentId={this.props.selectediD} onNextStep={this.nextOption} onSelectPaymentType={this.handleSelectPaymentType} 
+          />
 
-      </div >
+          {this.state.selectedPaymentType === 'single' && (
+            <Payment onNextStep={this.handleNextStep} selectedId={this.props.selectedId} />
+          )}
+
+          {this.state.selectedPaymentType === 'wizard' && (
+            <PaymentWizardStep2 onNextStep={this.handleNextStep} selectedId={this.props.selectedId} />
+          )}
+        </div> */}
+      </></>
     )
   }
 }
