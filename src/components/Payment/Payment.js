@@ -9,54 +9,47 @@ import CreateGurantorBillingForm from "./CreateGurantorBillingForm";
 import HelcimForm from "./HelcimForm"
 class Payment extends Component {
   getPaymentType = async () => {
-    const response = await Paymentcontroller.getPaymentProvider(
-      window.location.href.split("/")[
-      window.location.href.split("/").length - 1
-      ]
-    );
+    const { selectedId } = this.props;  // Use the selectedId from props
 
-    console.log(response.provider)
-    this.setState({
-      paymentType: response.provider
-    })
-  }
+    if (selectedId) {
+      const response = await Paymentcontroller.getPaymentProvider(selectedId);
+
+      console.log(response.provider);
+      this.setState({
+        paymentType: response.provider
+      });
+    } else {
+      console.error("No selected ID provided");
+    }
+  };
+
+
 
   getPaymentData = async () => {
-    this.setState({
-      loading: true,
-    });
-    if (
-      window.location.href.split("/") &&
-      window.location.href.split("/")[
-      window.location.href.split("/").length - 1
-      ]
-    ) {
-      localStorage.setItem(
-        "paymentId",
-        window.location.href.split("/")[
-        window.location.href.split("/").length - 1
-        ]
-      );
-      const response = await Paymentcontroller.get_payment_data(
-        window.location.href.split("/")[
-        window.location.href.split("/").length - 1
-        ]
-      );
-      if (response.paid) {
-        localStorage.setItem("Payment-Receipt", true);
-        window.location.href = "#/payment-Done";
-      } else {
-        localStorage.setItem("Payment-Receipt", false);
-        if (!response.billing_complete) {
-          this.setState({
-            stripe_complete: false,
-          });
+    const { selectedId } = this.props;
+
+    if (selectedId) {
+      this.setState({ loading: true });
+
+      try {
+        const response = await Paymentcontroller.get_payment_data(selectedId);
+        if (response.paid) {
+          localStorage.setItem("Payment-Receipt", true);
+          window.location.href = "#/payment-Done";
+        } else {
+          localStorage.setItem("Payment-Receipt", false);
+          if (!response.billing_complete) {
+            this.setState({ stripe_complete: false });
+          }
         }
+        this.setState({
+          payment_data: response,
+          loading: false,
+        });
+      } catch (error) {
+        console.error('Error fetching payment data:', error);
+        this.setState({ loading: false });
       }
-      this.setState({
-        payment_data: response,
-        loading: false,
-      });
     }
   };
   constructor(props) {
@@ -84,26 +77,23 @@ class Payment extends Component {
   }
 
   readHelcimData = async () => {
-    const response = await Paymentcontroller.getHelcimToken(
-      window.location.href.split("/")[
-      window.location.href.split("/").length - 1
-      ]
-    )
+    // Ensure that selectedId is being correctly passed and set in the component's state or props.
+    const { selectedId } = this.props; // or this.state, depending on where selectedId is stored
 
-    console.log(response)
+    // Use selectedId directly without parsing from URL
+    const response = await Paymentcontroller.getHelcimToken(selectedId);
+
+    console.log(response);
     this.setState({
-
       helcimConfig: {
         customerCode: response["customerCode"],
         token: response["helcim js token"]
       },
       visibleModalHelcimOpenModal: true
-    })
-
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // Check if the state value has changed to true
     if (this.state.visibleModalHelcim && !prevState.visibleModalHelcim) {
       this.readHelcimData()
     }
@@ -135,13 +125,12 @@ class Payment extends Component {
     window.location.reload();
   };
 
+
   handlePayment = async () => {
+    const { selectedId } = this.props;
+
     if (this.state.payment_data.stripe_complete) {
-      const response = await Paymentcontroller.paySinglePayment(
-        window.location.href.split("/")[
-        window.location.href.split("/").length - 1
-        ]
-      );
+      const response = await Paymentcontroller.paySinglePayment(selectedId);
 
       if (response.status < 250) {
         localStorage.setItem("Payment-Receipt", true);
@@ -157,6 +146,7 @@ class Payment extends Component {
       this.setState({ visibleModal: true });
     }
   };
+
 
   handleReadDataIP = async () => {
 
@@ -174,48 +164,36 @@ class Payment extends Component {
   };
 
   handleApprovedCardByHelcim = async (cardToken) => {
-    const userIP = ""
+    const { selectedId } = this.props;  // Ensure selectedId is available in props
+
+    if (!selectedId) {
+      console.error("No selected ID provided");
+      message.error("Payment failed: No selected ID provided.");
+      return;
+    }
+
     try {
       const ipResponse = await fetch('https://api.ipify.org?format=json');
       const ipData = await ipResponse.json();
-      const userIp0 = ipData.ip;
-      const response = await Paymentcontroller.helcimPay(
-        window.location.href.split("/")[
-        window.location.href.split("/").length - 1
-        ],
-        cardToken,
-        userIp0
-      )
+      const userIp = ipData.ip;
+
+      const response = await Paymentcontroller.helcimPay(selectedId, cardToken, userIp);
 
       if (response.status < 250) {
         message.success("Payment successful");
-
-        window.location.href = window.location.origin + window.location.pathname +
-          "#/payment/" + window.location.href.split("/")[
-          window.location.href.split("/").length - 1
-          ]
+        window.history.pushState({}, '', `/payment/${selectedId}`);  // Update the URL without reloading the page
       } else {
-        var errors = Object.keys(response)
-
-        errors.map((resp) =>
-          resp != "status" ? message.error(response[resp]) : ""
-        )
-        this.setState({
-          loadingHelcimResultCheck: false
-        })
-
+        message.error("Payment failed: " + response.error);
       }
     } catch (error) {
-      console.error('Error fetching IP address:', error);
+      console.error('Error during payment processing:', error);
+      message.error("Payment processing error: " + error.message);
     }
-    /*
-    }*/
-  }
+  };
 
-  // check submited helcim form
+
   componentDidMount() {
 
-    // Function to parse URL parameters
     const getUrlParameter = (name) => {
       name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
       const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -247,68 +225,33 @@ class Payment extends Component {
   render() {
     return (
       this.state.loadingHelcimResultCheck ?
-        <>
-          <Row justify={"center"} className="mt5p">
-            <br />
-            <br />
-            <br />
-            <Spin size="large" />
-
-          </Row>
-          <Row justify={"center"}>
-            <p style={{ marginTop: "15px", color: " #722ed1", fontWeight: "600", fontSize: "15px" }}>Processing Payment</p>
-          </Row>
-        </>
-
+        <Row justify={"center"} className="mt5p">
+          <br />
+          <br />
+          <br />
+          <Spin size="large" />
+        </Row>
         :
         <div>
-          <div className="dashboard-container">
-            <div className="pageBody wizard-page">
-              <div className="page-header">
-                <div className="title pageHeader">
-                  {this.state.payment_data &&
-                    this.state.payment_data.office_logo ? (
-                    <img
-                      className="bookcLogo"
-                      src={this.state.payment_data.office_logo + ""}
-                      alt="logo"
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                <span className="appointmentStep">
-                  {this.state.loading
-                    ? ""
-                    : this.state.stripe_complete
-                      ? "Payment Detail"
-                      : "Patient Information"}
-                </span>
-              </div>
-              <Card style={{ borderTop: "5px solid #a677f6" }} bodyStyle={{ padding: '10px' }}>
-                <div className="header_payment_page_part">
-                  {!this.state.loading ? "Payment Details" : ""}
-                </div>
+          {this.state.loading ? (
+            <>Loading...</>
+          ) : !this.state.stripe_complete ? (
+            <>
+              <hr className="endline_payment" />
 
-                {this.state.loading ? (
-                  <>Loading...</>
-                ) : !this.state.stripe_complete ? (
-                  <>
-                    <hr className="endline_payment" />
-
-                    <CreateGurantorBillingForm
-                      handleSubmit2={this.handleSubmit2}
-                    />
-                    <div style={{ height: "15px" }}></div>
-                  </>
-                ) : (
-                  <>
-                    <div
+              <CreateGurantorBillingForm
+                handleSubmit2={this.handleSubmit2}
+              />
+              <div style={{ height: "15px" }}></div>
+            </>
+          ) : (
+            <>
+              {/* <div
                       className="main_container_card "
                       style={{ paddingTop: "0px", fontWeight: "bold" }}
                     >
                       <div>
-                        <div>Amount</div>
+                        <div>Total</div>
                       </div>
                       <div className="align_rights_items" s>
                         <div>
@@ -317,38 +260,67 @@ class Payment extends Component {
                             : "-"}
                         </div>
                       </div>
+                    </div> */}
+              <div className='dashboard-container' style={{ marginLeft: "53%", width: '44%' }}>
+                {this.state.loadingHelcimResultCheck ? (
+                  <Row justify={"center"} >
+                    <Spin size="large" />
+                  </Row>
+                ) : (
+                  <div>
+                    <div className="payment-details1">
+                      <div className="payment-row">
+                        <div className="payment-label">Total</div>
+                        <div className="payment-value"> {this.state.payment_data.amount
+                          ? this.state.payment_data.amount
+                          : "-"}</div>
+                      </div>
                     </div>
-                    <div style={{ height: "15px" }}></div>
-
-                    <Row><Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
-                      <Button
-                        onClick={() => {
-                          if (this.state.paymentType != "helcim") {
-                            this.setState({ visibleModal: true });
-                          }
-                          else {
-                            this.setState({ visibleModalHelcim: true });
-                          }
-                        }}
-                        className="login-btn  "
-                        style={{ width: "92%", alignSelf: "center" }}
-                        type="primary" size="large"
-                      >
-
-
-                        Payment
-
-
-                      </Button>
-                    </Col>
-                    </Row>
-                    <div style={{ height: "15px" }}></div>
-                  </>
+                  </div>
                 )}
+              </div>
 
-              </Card>
-            </div>
-          </div>
+              {/* <Row><Col span={24} style={{ display: 'flex', justifyContent: 'center' }}> */}
+              {/* <Button
+                  onClick={() => {
+                    if (this.state.paymentType != "helcim") {
+                      this.setState({ visibleModal: true });
+                    }
+                    else {
+                      this.setState({ visibleModalHelcim: true });
+                    }
+                  }}
+                  className="login-btn  "
+                  style={{ width: "92%", alignSelf: "center" }}
+                  type="primary" size="large"
+                >
+
+
+                  Payment
+
+
+                </Button> */}
+              <Button
+                style={{ marginLeft: '73%', width: 139, height: 38, background: '#6B43B5', color: 'white', marginTop: 15 }}
+                onClick={() => {
+                  if (this.state.paymentType != "helcim") {
+                    this.setState({ visibleModal: true });
+                  }
+                  else {
+                    this.setState({ visibleModalHelcim: true });
+                  }
+                }}
+              // className="login-btn submit-wizard-btn w100p" type="primary" size='large'
+              >
+
+                Next
+
+              </Button>
+              {/* </Col>
+              </Row> */}
+            </>
+          )}
+
           <Modal
             onCancel={() => {
               this.setState({ visibleModal: false });
@@ -369,10 +341,10 @@ class Payment extends Component {
             footer={null}
             title="Payment"
             open={this.state.visibleModalHelcimOpenModal}
+            style={{ minWidth: 921 }}
           >
             <HelcimForm helcimConfig={this.state.helcimConfig} />
           </Modal>
-          <PoweredBy />
         </div>
     );
   }
